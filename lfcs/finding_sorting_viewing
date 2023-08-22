@@ -1,0 +1,49 @@
+'find' command lets you search the filesystem for files with specific attributes, ex.
+
+find $DIRECTORY -name '*.jpg' - search for all .jpg files in directory specified (case-sensitive name)
+find $DIRECTORY -iname 'FiLe' - serach for all files with name 'file' without case-sensitivity
+find $DIRECTORY -size +10M - search for all files larger than 10 megabytes in directory specified
+find $DIRECTORY -mmin -1 - search for all files that have been modified within last minute
+find $DIRECTORY -mmin 5 - search for files modified exactly 5 minutes ago
+find $DIRECTORY -mmin -5 - search for files modified in the last 5 minutes
+find $DIRECTORY -mmin +5 - search for files modified more than 5 minutes ago
+find $DIRECTORY -mtime 2 - search for files modified in 2 hours
+find $DIRECTORY -cmin -5 - search for files changed in the last 5 minutes
+
+Modified Time != Change Time
+
+Modified Time = Modified Contents
+Change Time = Change Metadata, ex. permissions
+
+find -size $SIZE(c/k/M/G) - find file with a size of $SIZE(bytes/kilobytes/Megabytes/Gigabytes)
+find -name 'f*' -size 512k - find file with name starting with 'f' AND 512 kilobytes of size
+find -name 'f*' -o -size 512k - find file with name starting with 'f' OR 512 kilobytes of size
+find -not -name 'f*' - find all files that DO NOT begin with lowercase letter 'f'
+find \! -name 'f*' - same thing, but using alternate NOT operator
+
+	Note:
+	Typing backslash before a character escapes it, it's then not used as command, but
+	rather as a string or an argument
+
+find -perm 664 - find files with exactly rw-|rw-|r-- permissions
+find -perm -664 - find files with at least rw-|rw-|r-- permissions
+find -perm /664 - find files with any of these permissions
+sed -i 's/canda/canada/g' userinfo.txt - stream editor - change all instances of word 'canda' in file to
+'canada'. Use the same command without '-i' ('--in-place') argument to preview changes. Add 'i' at the
+end after 'g' to ignore case.
+s     /     canda  /   canada    /         g 
+^search for   ^keyword	  ^replace with    ^global flag - all instances instead of only first one
+cut -d ' ' -f 1 $FILE - cut only first column from the file
+-d - delimiter argument
+' ' - set space as delimiter
+-f - field argument
+1 - field number
+uniq $FILE - get unique entries from file
+sort $FILE - sort entries
+diff $FILE1 $FILE2 - see differences between files' contents. Use '-c' argument to see more context.
+sdiff or diff -y - see differences side by side
+less - show file or command as a scrollable terminal pager. Use '-N' argument to see line numbers.
+Press '/' key to search for string in pager. Press 'n' to search for each new instance of string.
+Pass -i option to ignore case. 'N' will move upward through the previous results. Use 'q' to quit.
+
+

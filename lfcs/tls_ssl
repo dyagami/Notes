@@ -1,0 +1,20 @@
+SSL (Secure Sockets Layer) and TLS (Transport Layer Security) are ways of authentication for various
+connections. SSL is a legacy, more vulnerable way of authenticating communications between hosts. TLS have
+replaced SSL, but SSL was used for a very long time. Because of that, sometimes TLS is being called
+SSL, since the name stuck with community. TLS and SSL prove hosts' crediblity to each other using
+encrypted certificates. OpenSSL is a Linux pre-installed software for making both SSL and TLS certificates.
+It can also be used for many other cryptographic operations, including private and public keys, encryption
+and decryption with ciphers, handling encrypted mail, etc. The feature we're interested with for TLS is
+creation of X.509 certificates.
+
+openssl req - create Certificate Signing Request (CSR) and private key pair for authentication of remote
+host
+openssl req -newkey rsa:2048 	-keyout privatekey.pem 		-out req.pem
+			^cipher complexity   ^private key output file	^ CSR request as file
+openssl req -x509 -noenc -newkey rsa:4096 -keyout key.pem -out mycertificate.crt
+-x509 - flag that creates a certificate which can be used for signing CSR from other host
+
+openssl x509 - certificate display and signing command
+openssl x509 -in $FILE -text - display decoded certificate above encoded version
+
+s

@@ -1,0 +1,26 @@
+> - redirect command's output and overwrite file contents (stoudt - standard output)
+>> - redirect command's output and append to file contents (stdout - standard output)
+< - redirect command's input from file (stdin - standard input)
+2> - redirect command's error messages to a file (stderr - standard error)
+$COMMAND 1> $FILE1 2> $FILE2 - output command's contents to $FILE1 and errors to $FILE2.
+$COMMAND > $FILE 2>&1 - output command's content AND error messages exactly as seen in terminal.
+Standard output is redirected without error messages by default.
+You can redirect output to /dev/null to get rid of unwanted text, ex. 2> to prevent errors from display.
+/dev/null is a 'black hole' of Linux. Everything that gets redirected there gets discarded.
+<<EOF, then >EOF - signal beginning and end of multiple-lined input for command. This type of passing
+input is called heredoc.
+<<< $STRING - pass a single string to a command (Here String). Useful in scripting.
+| - pipe output of a command to another command. You can pipe to many commands in a single streak. 
+
+sudo systemctl poweroff - Shut down system. Pass '--force' argument to shut down forcibly. Passing it
+double is an equivalent of cutting of machine's power. Not recommended unless necessary. You can also 
+use legacy 'shutdown' command, which can be appended with time, ex. 'shutdown +10' for a shutdown in 
+10 minutes, 'shutdown 22:10' for a shutdown at 22:10.
+sudo systemctl reboot - Reboot system. Pass '--force' argument to reboot forcibly. Pass this argument
+double to do an equivalent of pressing reset button. You can also use  legacy 'reboot' command, which
+was being used in SystemVInit, but has been symlinked to SystemD in many modern systems since.
+
+If you schedule a reboot or a shutdown, you can add a wall message in a single quotes just after the
+command to alert logged in users about scheduled action so they can save their work beforehand.
+
+

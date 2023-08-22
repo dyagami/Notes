@@ -1,0 +1,68 @@
+-------------------VIM--------------------
+<<COMMAND MODE>>
+'G' to go to the beginning of the file
+'gg' to go to the end of the file
+'i' for insert mode, 'I' to enter at beginning of a line, 'A' to enter at the end of the line. 'a'
+to enter at one character before.
+'v' - enter visual mode for selecting
+'ctrl + v' - enter visual block mode for selecting text in blocks
+'/$STRING\$ARGUMENT' to search for text
+'?$STRING\$ARGUMENT' to search for text backwards
+:%s/$STRING/$NEWSTRING/g - replace all string occurrences in file with another string.
+'n' to go to the next search search result. 'N' to go to previous one.
+'\c' while typing search term to ignore case in search.
+When you enter visual mode, select text, press 'esc' and then '#', you can highlight selected
+text occurrences in file. You can navigate through next and previous occurrences of the selected
+text using '#' and '*'.
+'m' to mark a waypoint, then 'A' to name this waypoint 'A'. Then you can go back to saved waypoint
+by using '?' and then waypoint name. 
+:$LINENUMBER - to go to line specified
+'zz' - center view to current line
+'yy' - copy current line
+'p' - paste copied line
+'dd' - cut current line
+:w - write changes
+:qw or 'ZZ' - quit and write changes
+:q! - quit without saving changes
+:w $FILENAME - write to filename specified
+!$COMMAND while in vim - use terminal command without exiting vim
+:set number - enable line numbers
+$NUMBER $COMMAND - repeat command a number of times, ex. move a number of lines up.
+This can be done with almost any command.
+'h', 'j', 'k', 'l' - alternative navigation
+'u' - undo
+'ctrl+r' in command mode - redo
+'r $CHARACTER' - change character below the cursor to a different one
+'C' - cut the rest of the line and enter insert mode
+'ciw' - change and insert word
+'e' - jump to the end of a word
+'E' - jump to the end of a word considering only spaces to be separators
+' ci" ' - change inner quotation marks. Useful in programming.
+' ci' ' - same thing but with single quotes
+' ci( ' - change inner parentheses
+' % ' - jump to a highlighted place, ex. closing bracket
+' f$CHARACTER ' - find and jump to next occurence of the character
+' dt$CHARACTER ' - cut everything until the character specified
+'d' to enter cut mode. 'w' to cut a word. '2w' to cut two words. '2b' to
+cut two words backwards.
+'t' jumps one position before the next occurence of the symbol specified in the current line
+'f' jumps onto that. Capital 'T' and 'F' do the same things, but backwards. ex. ' yt{ '
+(yank t {) copies everything in the same line before the first occurence of curly bracket opening
+'==' - auto-indent text below cursor
+'.' - repeat a command
+:reg - see the list of registers (copied and cut text are stored in registers). Registers are stored
+with ' " ' before them. You can use this in commands, ex. ' "7p ' to paste 7th register.
+' "+ ' represents the clipboard. 
+'q $NAME esc' - record a macro. Macro is stored as register with macro name, ex. "a. Macros execute
+exact commands stored, ex. command with text in insert mode.
+'@ $NAME' - execute a macro at cursor. You can execute another macros from within a macro.
+
+<<VISUAL MODE>>
+'Esc' to get back to command mode
+'d' - cut selected text
+'D' - cut the rest of the line
+'y' - copy selected text
+'cc' in - cut the line and enter insert mode
+:s/$STRING/$NEWSTRING/g - replace all string occurrences in selected text to another string
+
+

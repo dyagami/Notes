@@ -1,0 +1,19 @@
+TARGETS:
+multi-user.target - text-based mode
+graphical.target - graphical mode
+emergency.target - emergency mode - this will boot system as read-only
+rescue.target - a few essential services will be loaded and you will be booted in root shell.
+Emergency and rescue targets need root password to be set.
+
+IN A CHROOTED SESSION OF A MACHINE WITH BROKEN BOOTLOADER:
+grub2-mkconfig -o /boot/grub2/grub.cfg - generate grub config for BIOS-bootup-configured system
+grub2-mkconfig -o /boot/efi/EFI/centos/grub.cfg - generate grub config for EFI-bootup-based system. This
+path is specific to CentOS, you will need to ls /boot partition to find corresponding path on other systems,
+but the principle stays the same.
+lsblk - list block devices
+grub2-install $PARTITION - install GRUB2 on first sector of a BIOS-based boot partition. Remember to use
+this on /boot partition, you can check which one is it using lsblk.
+dnf reinstall grub2-efi grub2-efi-modules shim - install GRUB2 on EFI-based boot partition
+/etc/default/grub file contains GRUB2 configuration and is used by grub2-mkconfig utility to generate
+config in the place specified.
+

@@ -1,0 +1,43 @@
+cat - content as text - view file contents in terminal
+tac - view file contents in terminal in reverse line order
+head (-n $LINES) - view file content beginning
+tail (-n $LINES) - view file content ending
+man $COMMAND - see manual page for a command
+man $SECTION $COMMAND (ex. 'man 7 man' for manual page section 7 for command man) - show man page from section
+specified for command specified
+man -k $REGEXP (or 'apropos $REGEXP') - look up command associated in man pages with string specified
+
+	Note:
+	Man sections worth your while as a sysadmin will be 1 (executable programs and shell commands) and 8
+	(system administration commands)
+
+	Note:
+	If you encounter a new command, pause and read through man pages first, so you can get accustomed to
+	getting what info you need from them quickly
+
+'cd -' - get back to previous directory
+stat $FILE - show detailed info about a file
+ln $TARGET_PATH $LINK_PATH - create a hard link to a file (instead of copying data)
+
+	Note:
+	Hard links work only for files, not directories. Also, the target and link paths must be on the same
+	filesystem. The file gets deleted only when it has 0 hard links. It means that deleting the original
+	hard link doesn't cut the file if another hard link was created. All of these point to the Inode
+	value, which is an ID method of linking to different disk sectors containing the file's data.
+	!!IMPORTANT!!
+	Linux filesystem permissions are stored in Inodes. This means that two hard links to one Inode will
+	have shared permissions and ownership.
+
+ln -s $TARGET_PATH $LINK PATH - create a symbolic link to a file
+
+	Note:
+	If a file is actually a symbolic link to another file, the 'ls -l' command will show us 'l' at the
+	front of a permission string and also a path that a symbolic link links to.
+
+readlink $SYMLINK_PATH - shows a path which the symbolic link points to
+
+	Note:
+	(symlink == symbolic link == softlink)
+	If original file changes its path, the symbolic link will break. The broken symlinks are highlighted
+	in red in 'ls -l' command output. You CAN softlink to directories.
+

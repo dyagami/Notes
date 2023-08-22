@@ -1,0 +1,27 @@
+tar = tape archive. Tape archives have .tar extensions and are called tarballs.
+tar $ARGS $FILENAME.tar $FILE1 $FILE2...  - make a tar archive. '-t' lists files. '-c' tells tar
+to create new archive. '-r' to append files to an existing archive. '-A' appends archive to the end
+of another archive. '-f' specifies output file and should be added as the last argument. '-x' to
+extract files from archive. '-C' to specify output directory for extraction. '-z' to compress tarball
+on the fly with gzip. 'j' to do the same with bzip2. 'J' to do the same with xz. '-a' makes for an
+autocompression.d
+
+To compress tar archives or regular files, you can use one of three compression standards:
+gzip $FILE - gunzip $FILE.gz to decompress 
+bzip2 $FILE - bunzip $FILE.bz to decompress
+xz $FILE - unxz $FILE.xz to decompress
+While decompressing, you can use (-k) argument to keep original file.
+
+zip $NAME $FILE - create a zip archive. You can only pass a single file or folder to a one zip archive
+using zip command. '-r' to use recursively with folders. 'unzip $FILE' to decompress an archive.
+
+rsync -a $DIR $USER@$IP/$REMOTE_DIR - remote synchronization. This command lets you synchronize local
+files with remote server. The remote server has to have SSH daemon installed and enabled. You can 
+invert paths in syntax to synchronize remote directory with local directory. You can also synchronize
+two local directories.
+
+sudo dd if=$DIR of=$OUTPUTFILE bs=1M status=progress - create one-to-one disk image. bs refers to block
+size. You can invert Input File and Output File to unpack image. DO NOT RUN ON VM, as it will overwrite
+your virtual disk.
+
+

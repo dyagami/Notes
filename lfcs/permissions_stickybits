@@ -1,0 +1,99 @@
+chgrp $GROUP $PATH - change group of a file or directory
+groups - list all groups on current system
+chown $USER $PATH - change owner of a file or directory
+chmod $PERMISSIONS $USER - change permissions of a file or folder
+
+Permissions:
+-rwxrwxrwx
+^
+File type
+
+Identifiers:
+d - directory
+'-' - regular file
+c - character device
+l - link
+s - socket file
+p - pipe
+b - block device
+
+	Note:
+	Named Pipe (FIFO; identified by 'p') - A special file on the linux filesystem - 
+	Created by 'mkfifo' command. Processes can read from it and write to it
+	as if it was a pipe. 
+
+	Note:
+	Character device file type represents character deivces, which handle data as
+	stream of bytes. Contrary to block devices.
+	
+	Block device file type represents block devices, which store data in blocks
+	of a fixed size. They usually have filesystems and store data in an orderly manner.
+
+-rwxrwxrwx
+
+Aside from the first character representing the file type, we have 3 sets of 3
+characters representing permissions for owner, group and others.
+
+in context of a file:
+r - read file
+w - write to file
+x - execute (run) file
+'-' - no permission
+
+in context of a folder:
+r - read direcotry
+w - write to directory
+x - execute (cd) into directory
+'-' - no permission
+
+      -        rwx   rwx   rwx
+  file type   owner group others
+		u     g     o
+
+	Note:
+	Filesystem permissions are interpreted in order, the former ones are not overwritten
+	by latter ones. That means if the owner doesn't have a write permission, but he 
+	belongs to group assigned to the file that has write permission, he still won't be 
+	able to write to this file.
+
+Octal Permissions are decimal representation of binary permission values, ex.
+
+	rw- | r-- | ---
+	110   100   000
+	 ^     ^     ^
+	 6     4     0
+
+r = 4
+rw = 6
+rwx = 7
+rx = 5
+
+Octal table
+
+Permission	Value
+    r		  4
+    w		  2
+    x		  1
+
+These numbers can be added to combine permissions in one octal value. It can then be set using chmod.
+
+chmod $UGO_OCTAL_VALUES $FILENAME, ex. 
+chmod 640 file.txt - meaning file.txt will have rw-|r--|--- permissions
+
+Suid bit lets you set default userid executing the file.
+chmod 4664 $FILENAME - set file permissions with Suid (the first decimal number sets Suid bit)
+chmod 4764 $FILENAME - set file permissions with Suid with execute permissions. 'ls -l' output
+shows you capital S when there's no execute permission for Suid and lowercase s when there is
+an execute permission (the user has full access).
+chmod 2664 $FILENAME - set file permissions with Guid
+chmod 4674 $FILENAME - set file permissions with guid with full access for group
+find . -perm /4000 - find files with suid
+find . -perm /2000 - find files with sgid
+find . -perm /6000 - find files with either suid or guid
+
+chmod 1777 $DIRECTORY - make directory a stickydir (set sticky bit)
+The sticky bit is a permission bit that protects the files within a directory. When the sticky bit
+is set on a directory, only the file's owner, the directory's owner, or the root user can rename or
+cut the file. Others (even if they have write permissions on the directory) cannot rename or cut the file.
+
+'

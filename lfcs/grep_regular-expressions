@@ -1,0 +1,31 @@
+grep '$REGEX' $DIRECTORY - search for a regular expression pattern in file. '-i' to ignore case.
+'-r' to make search recursive. '-v' for invert match. '-w' to match only the exact words. '-o'
+for only matching words in output. '-c' to output count of matches instead of matches.
+sudo grep -ir '$REGEX' /etc - search for priviliged user-accessible system files
+
+Regular expression basics:
+
+^line starts with
+line ends with$
+. matches any character, ex. 'c.t' will match 'cat', 'cut', etc.
+\ escapes special characters
+word* matches last character 0 or more times, ex. 'wor', 'word', 'wordd'
+You can combine these, ex. 'grep -r '/.*/' /etc/' will match any instances of '/any words/' (as in
+subdirectories) in /etc.
++ matches one or more character, ex. '+0' will match '0', '00', '0000000', and so on. You need to
+escape this character using backslash, as it's a meta-character and it loses its meaning in basic
+regular expressions. You can use extended regular expressions to avoid confusion by passing an
+'-E' argument to grep or using egrep, which uses extended regular expressions by default. It's a
+good habit to always use egrep to make things simplier with regular expressions.
+$CHARACTER{$NUMBER,$NUMBER} matches the character specified number of times (from number to number),
+ex. '0{3,}' matches at least 3 zeroes, '0{3}' matches exactly three zeroes, '0{,3}' matches at most
+3 zeroes.
+? makes the previous element optional
+$EXPRESSION|$EXPRESSION to match expression OR expression
+[a-z], [0-9] matches range of characters or numbers
+[abz965] matches any character from set
+brackets '()' let you use subexpressions similar as in maths
+[^a-z] matches negated ranges or sets, ex. 'http[^s]' matches http and excludes https
+You can find more info about regular expressions on regexr.com
+
+t
