@@ -1,0 +1,24 @@
+--sripting---
+Every Bash script should begin with a shebang. Shebang is a '#!' expression followed by a path for script
+interpreter (in our case Bash shell)
+#!/bin/bash
+# is a comment
+You can use every Linux command in a Bash script.
+It is wise to save command outputs in one file for each script, ex. /tmp/script.log
+Script file needs execute permission to be executed.
+./#FILE.sh to run script.
+if conditional statement works as in other languages, but needs to be closed using 'fi'
+example:
+
+if test -f /tmp/archive.tar.gz; then
+	mv /tmp/archive.tar.gz
+/tmp/archive.tar.gz.OLD
+	tar acf /tmp/archive.tar.gz /etc/dnf/
+else
+	tar acf /tmp/archive.tar.gz /etc/dnf
+
+
+The code above checks if an archive file exists and renames it to the same name with '.OLD' suffix and
+then creates the new archive. If there's no file with such name present, it just creates the archive.
+'test' function checks if file exists and returns True or False boolean values for corresponding cases.
+
