@@ -16,7 +16,7 @@ if test -f /tmp/archive.tar.gz; then
 	tar acf /tmp/archive.tar.gz /etc/dnf/
 else
 	tar acf /tmp/archive.tar.gz /etc/dnf
-
+fi
 
 The code above checks if an archive file exists and renames it to the same name with '.OLD' suffix and
 then creates the new archive. If there's no file with such name present, it just creates the archive.
