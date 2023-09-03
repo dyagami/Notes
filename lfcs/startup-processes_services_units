@@ -53,4 +53,10 @@ reload-or-restart $SERVICE' command.
 sudo systemctl disable $SERVICE - disable service autostart with boot
 sudo systemctl enable $SERVICE - enable service autostart with boot
 sudo systemctl is-enabled $SERVICE - check if service's autostart is enabled
+sudo systemctl enable $SERVICE - enable a service. Add '--now' argument to also start it at the same time.
+sudo systemctl disable $SERVICE - disable a service. Add '--now' argument to also stop the service.
+sudo systemctl mask $SERVICE - hide a service and make it impossible to control until unmasked.
+sudo systemctl unmask $SERVICE - unmask a service.
+sudo systemctl list-units --type service --all - list all system services.
 
+man systemd.service - look for all systemd service options when writing a .service file.
