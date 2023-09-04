@@ -60,3 +60,10 @@ sudo systemctl unmask $SERVICE - unmask a service.
 sudo systemctl list-units --type service --all - list all system services.
 
 man systemd.service - look for all systemd service options when writing a .service file.
+
+'.service' unit instructs init system how to start a daemon and how to keep it running.
+
+'Restart=' option tells systemd to restart application at condition specified.
+'RestartSec=' option specifies delay after which the app will be restarted. Prevents restart loops.
+
+

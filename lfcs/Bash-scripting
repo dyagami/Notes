@@ -22,3 +22,10 @@ The code above checks if an archive file exists and renames it to the same name 
 then creates the new archive. If there's no file with such name present, it just creates the archive.
 'test' function checks if file exists and returns True or False boolean values for corresponding cases.
 
+You can specify error logging in a Bash script by piping output to 'systemd-cat' command, ex.
+
+#!/bin/bash
+echo "App Started" | systemd-cat -t App -p info # this will behave as normal output and go to stdout
+sleep 5
+echo "App Crashed" | systemd-cat -t App -p err # this will behave as error output and go to stderr
+
