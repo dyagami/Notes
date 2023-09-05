@@ -63,7 +63,52 @@ man systemd.service - look for all systemd service options when writing a .servi
 
 '.service' unit instructs init system how to start a daemon and how to keep it running.
 
+When creating your own daemon service, you should create a .service file in /etc/systemd/system. It's wise
+to copy another service file and edit it according to your needs. 
+
+The following instructions are taken from SSH Daemon .service file, the other .service files may differ in
+options, but the rules are the same.
+
+in '[Unit]' section:
+'Description=' option is self-explanatory
+'Documentation=' option specifies man pages for your service
+'After=' option specifies after which service (or set of services - .target) should the service start
+'ConditionPathExists=' option tells service to start only when a path specified exists
+
+
+in '[Service]' section:
+'EnvironmentFile=' option loads environment variables from the file specified
 'Restart=' option tells systemd to restart application at condition specified.
 'RestartSec=' option specifies delay after which the app will be restarted. Prevents restart loops.
+'ExecStartPre=' option tells unit to execute command or script before starting service.
+'ExecStart=' option tells unit to execute command or script on service start. This option starts your
+application when you specify a command or a shell script file.
+'ExecReload=' option specifies what shall be executed when an administrator issues a 'systemctl reload'
+command
+'KillMode=' option specifies how the application should be stopped when an admistrator issues a 'systemctl
+stop' command. 'process' option tells systemd to only kill the main process and not child processes. If
+you specify 'control-group', the command will kill all processes created by this service.
+'Restart=on-failure' option tells systemd to only restart the application on failure, meaning the
+application stopped returning a non-zero exit code
+'RestartPreventExitStatus=' option tells systemd to not restart the service if the application returns an
+exit code specified
+'Type=notify' option tells systemd that the application will notify it when it's finished starting up. The
+application must be coded to do so to make this option applicable. If your application doesn't support such
+functionality and doesn't need to run in the background change type to 'simple'. Another option is 'forking'
+which is made for apps that spawn many child processes.
+'RuntimeDirectory=' specifies a relative path that application should run in
+'RuntimeDirectoryMode=' specifies permissions for that relative directory. This could be useful in need of
+the app to be creating temporary files.
 
+in '[Install]' section:
+'WantedBy=' option specifies target in which the application should work. Select 'multi-user.target' to let
+application run in terminal-only sessions. To check out more targets, see 'operating-modes_grub' file.
+'Alias=' option creates a symlink in /etc directory
+
+Whenever you create a new systemd service, you need to reload systemd daemon using
+'sudo systemctl daemon-reload' command.
+
+'sudo journalctl -f' to see syslog in real time
+
+You can always check systemd options for each unit (not only .service) by typing 'man systemd.$UNIT_TYPE'.
 
