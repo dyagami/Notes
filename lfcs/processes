@@ -1,0 +1,49 @@
+ps - view running processes at the exact time of entering the command - this command without arguments
+shows only the processes launched in a current terminal window
+ps aux - view all processes launch on the system in a BSD-style format
+
+in 'ps aux' output:
+
+%CPU - $CORES.$USAGE_OF_NTH_CORE
+TIME - time in seconds where 100% of one CPU core was used by the process, it calculates as total time, ex.
+50% of one CPU core for 10 seconds means 5 seconds added to 'TIME'
+COMMAND - exact command used for starting the processs. Commands put in square brackets are kernel processes
+started in a privileged kernel area.
+
+top - view system processes in real-time view
+
+ps (u) $PID - view info on process with PID specified
+ps -U $USER - show all processes started by user specified
+pgrep -a $NAME - view info of process with name specified
+
+Niceness value is a way of prioritizing processes above other processes. The lower the niceness value, the
+more important the process is and is more likely to acquire CPU usage. Niceness ranges from -20 to 19. Only
+root can set something to negative number, so assigning a Niceness value below 0 will need to be run with
+'sudo'.
+
+nice -n $NICE_VALUE $PROCESS - start a process with Niceness specified.
+renice $NICE_VALUE $PID - change Niceness of an existing process
+ps -l - show processes of current user with Niceness values
+ps lax - show all system processes with Niceness values
+ps fax - show forest view of all system processes
+ps faux - show forest view of all system processes with Niceness column
+
+Processes inherit Niceness values from the processes that ran them.
+
+You can send specific signals to processes. If they were programmed to do so, they should respond to these
+signals. Some signals are special and will work on any process as in 'sigkill' signal, which kills a process
+without letting it save any data.
+
+kill -L - show signal list
+kill -$SIGNAME $PID OR kill -$SIGNUMBER $PID - send a signal to the PID specified
+
+CTRL-C - exit a process
+CTRL-Z - suspend a process to the background
+fg - go back to suspended process
+$COMMAND & - run command in a background
+jobs - see paused or backgrounded programs
+fg $NUMBER - foreground a program specified
+bg $NUMBER - change state of a backgrounded process
+lsof -p $PID - show all open files and directories for the process specified
+lsof $/DIRECTORY/FILE - show which process uses file or directory specified. Recommended to always run as root.
+
