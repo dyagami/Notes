@@ -1,0 +1,32 @@
+cat /etc/crontab - see cron syntax
+'*' in crontab means 'match all possible values', ex. every hour, every day, etc.
+You shouldn't use system-wide crontab in /etc/ to set crontabs. Use 'crontab -e' instead to edit crontab
+for current user.
+In cron jobs you need to use full path to a command, which you can find using 'which $COMMAND' command.
+'crontab -e' - edit cron jobs for current user
+'crontab -l' - see crontab of current user
+'sudo crontab -e' - edit cron jobs for root user. Useful when setting up administrative cron jobs.
+'sudo crontab -l' - list root user cron jobs
+'sudo crontab -e -u $USER' - edit crontab of another user
+'crontab -r' - remove crontab
+
+You can set up daily, hourly, monthly and weekly cron jobs by putting scripts with no extension to a
+special folder in /etc. These folders are:
+/etc/cron.daily/
+/etc/cron.hourly/
+/etc/cron.monthly/
+/etc/cron.weekly/
+
+Cron jobs run only if the system is up. If you want your system to run overdue jobs anyway, you should
+use anacron. Anacron tab is located in /etc/anacrontab. It contains list of anacron jobs. It can only be
+accessed by root. 
+
+You can also use 'at' command to schedule jobs
+
+at $TIME_DATE $COMMAND_PATH - schedule job with at, ex. "at 15:00", "at 'August 20 2022'",
+"at 'now + 3 days'".
+atq - see what jobs are scheduled
+at -c $JOB_ID - see job details
+atrm $JOB_ID - remove at job
+
+
