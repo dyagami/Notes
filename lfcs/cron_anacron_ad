@@ -10,6 +10,12 @@ In cron jobs you need to use full path to a command, which you can find using 'w
 'sudo crontab -e -u $USER' - edit crontab of another user
 'crontab -r' - remove crontab
 
+When setting up crontab values, you can use regular expressions to:
+' * ' = match all possible values (i.e., every hour)
+' , ' = match multiple values (i.e., 15,45)
+' - ' = range of values (i.e., 2-4)
+' / ' = specifies steps (i.ex., */4)
+
 You can set up daily, hourly, monthly and weekly cron jobs by putting scripts with no extension to a
 special folder in /etc. These folders are:
 /etc/cron.daily/
@@ -17,9 +23,15 @@ special folder in /etc. These folders are:
 /etc/cron.monthly/
 /etc/cron.weekly/
 
+cat /var/log/cron to see cron logs with exact times and commands
+
+
 Cron jobs run only if the system is up. If you want your system to run overdue jobs anyway, you should
 use anacron. Anacron tab is located in /etc/anacrontab. It contains list of anacron jobs. It can only be
 accessed by root. 
+
+'sudo anacron -n' - run all scheduled anacron jobs immediately
+'sudo anacron -n -f'  run all anacron jobs, also forcing jobs that already ran
 
 You can also use 'at' command to schedule jobs
 
@@ -29,4 +41,7 @@ atq - see what jobs are scheduled
 at -c $JOB_ID - see job details
 atrm $JOB_ID - remove at job
 
+'sudo grep atd /var/log/cron' - see logs from at command scheduled jobs
 
+You can pipe any command to ' systemd-cat --identifier="$IDENTIFIER" ' to log it in systemd journal.
+You can then pipe the indentifier to journalctl to view generated logs.
