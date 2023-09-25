@@ -1,0 +1,23 @@
+sudo dnf repolist (-v) (-all) - view software repositories
+sudo dnf config-manager --enable $NAME - enable optional repo. Use '--disable' instead to disable it.
+sudo dnf config-manager --add-repo $ADDRESS - add repo to system list
+To remove a repo, check it's filename using 'sudo dnf repolist -v' and delete it.
+sudo dnf search $NAME - find package in repo
+sudo dnf info $NAME - get info on package
+sudo dnf reinstall $NAME - reinstall a package
+sudo dnf remove $NAME - remove a package
+sudo dnf group list - view list of package groups
+sudo dnf group install (--with-optional) '$NAME' - install a package group
+sudo dnf group list --hidden - view all package groups
+wget $URL - download package from a URL
+sudo dnf install ./$NAME.rpm - install a downloaded package
+sudo dnf autoremove - remove unneeded dependencies
+dnf provides $PATH - see what software package created the file
+dnf repoquery -l $PACKAGE - see all files that a package creates
+sudo dnf check-upgrade - see upgradeable packages
+
+df -h - check disk usage
+du (-sh) [s - summarize; h - human-readable] $DIRECTORY - show disk usage of directory specified
+free -h - check RAM usage
+uptime - see uptime with average CPU usage
+
