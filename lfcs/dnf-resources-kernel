@@ -20,4 +20,18 @@ df -h - check disk usage
 du (-sh) [s - summarize; h - human-readable] $DIRECTORY - show disk usage of directory specified
 free -h - check RAM usage
 uptime - see uptime with average CPU usage
+lscpu - see CPU details
+lspci - see info on other hardware on the system
 
+sudo xfs_repair -v $DEV - repair an xfs filesystem
+sudo fsck.ext4 -v -f -p $DEV - repair an ext4 filesystem
+sudo systemctl list-dependencies $UNIT - show dependencies of the unit specified. If no unit is specified,
+the output shows dependencies of current boot target.
+sudo pkill $NAME - send KILL signal to process by name
+
+sudo sysctl -a - see kernel parameters
+sudo sysctl -w $PARAMETER=VALUE - set parameter to a value specified. This change is not persistent.
+sudo sysctl $PARAMETER - read a parameter
+man sysctl.d - view user kernel parameter file syntax
+sysctl reads directory /etc/sysctl.d/*.conf for user-configured kernel parameters
+sudo sysctl -p /etc/sysctl/$FILE.conf - apply kernel parameters from user .conf file
