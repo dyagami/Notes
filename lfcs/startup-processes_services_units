@@ -112,3 +112,11 @@ Whenever you create a new systemd service, you need to reload systemd daemon usi
 
 You can always check systemd options for each unit (not only .service) by typing 'man systemd.$UNIT_TYPE'.
 
+You can look through unit files in /lib/systemd/system directory.
+
+
+
+
+
+
+
