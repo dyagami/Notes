@@ -1,0 +1,52 @@
+SELinux is a Kernel security module that 
+
+To see SELinux Context Label on files and directories, use 'ls -Z' command
+SELinux Context Label format looks like this:
+
+unconfined_u:object_r:user_home_t:s0
+   user	       role	type	  level
+
+Each user that logs into the system gets mapped to a predefined SELinux user as a part of the Linux policy
+configuration. After the user is identified, a decision is made to see if it can assume the Role.
+Each user can only assume a predefined set of Roles. Each Role gives user different permissions. 
+Next a check is performed to see if this Role can transition to a Type. Type is like a protective software
+jail where when something enters type enforcement, it can only do certain things and nothing else.
+This restriction bubble is called Type when dealing with files and Domain when dealing with processes.
+Processes can have labels too, just like files and directories.
+
+SELinux basically follows these principles:
+
+1. Only certain users can enter certain Roles and certain Types
+2. It lets authorized users and processes do theri job, by granting the permissions they need
+3. Authorized users and processes are allowed to  take onlym a limited set of actions.
+4. Everything else is denied
+
+ps axZ - view processes with SELinux Context Labels
+id -Z - view Context Label for current user
+sudo semanage login -l - view Context Label for all users
+getenforce - check if SELinux is enforcing its policies. 'Enforcing' means SELinux is applying policies.
+'Permissive' means it's allowing everything and just logging events that would trigger policy enforcement.
+'Disabled' means SELinux is not enforcing security nor logging anything.
+
+Linux Distros that don't have SELinux may have apparmor application installed instead (ex. Ubuntu).
+
+If you want to install SELinux on a system that doesn't have it yet, it's best practice to install it on
+fresh OS before installing any other application. To do so, you should first disable apparmor:
+sudo systemctl stop apparmor.service
+sudo systemctl disable apparmor.service
+sudo apt install selinux-basics auditd
+
+Audit Daemon service is a utility that logs certain system events and helps build additional Linux
+SELinux security policies personalized for your system
+
+sestatus - check if SELinux is running
+
+For SELinux to work, it has to have its module activated in kernel by boot loader. Also, every file on the
+filesystem needs to be labeled by SELinux Context.
+
+sudo selinux-activate - Configure bootloader to load SELinux Kernel Module at boot. This command also
+creates '.autorelabel' file in root directory that will label every filesystem file with SELinux Context
+Labels.
+
+
+//Install SELinux on fresh Ubuntu Server install for training
