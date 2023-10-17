@@ -48,5 +48,67 @@ sudo selinux-activate - Configure bootloader to load SELinux Kernel Module at bo
 creates '.autorelabel' file in root directory that will label every filesystem file with SELinux Context
 Labels.
 
+Now reboot the system so SELinux can add its Kernel module to the bootloader and automatically label
+all filesystem files with SELinux Context Labels.
 
-//Install SELinux on fresh Ubuntu Server install for training
+SELinux is running in Permissive Mode by default. You need to change it to Enforcing manually.
+
+In real life scenario, you should let SELinux run in Permissive Mode for a bit to log typical usage of
+your system so it can create a security policy specifically tailored to your system.
+
+Use 'sudo audit2why' command and, for example, pipe it to 'less' to see SELinux logged events that it
+collected during Permissive Mode
+
+'ps -Z | grep sshd_t' output shows that sshd process is labeled with 'sshd_t' SELinux Type
+
+'ls -Z /usr/sbin/sshd' output shows that sshd executable is labeled with 'sshd_exec_t' SELinux Type.
+It means that, when executed, the file will start a process with 'sshd_t' SELinux Type.
+
+'sudo audit2allow (--all)' command lets you allow one or all logged events in your policy. Pass
+'-M $MODULE_NAME' argument to assign these changes to a new module (or so-called policy package).
+
+'sudo semodule -i $MODULE_NAME' to enable your newly created module
+
+'sudo setenforce $(1/Enforcing/0/Permissive)' to set SELinux mode
+
+Mode set by 'setenforce' will only be valid until next reboot. This is useful for testing policies so
+you don't get brickwalled by mistake. To put SELinux into Enforcing Mode permanently, you need to edit
+'/etc/selinux/config' file. If SELinux policies are not inclusive enough, you may not be able to log
+back into the system, so use this with caution. 
+
+After creating an SELinux policy, two new files are created in the home directory - '$MODULE_NAME.te' and
+'$MODULE_NAME.pp'. '.pp' is short for 'policy package' and it's a binary file, which SELinux reads. The
+'.te' (Type enforcement) file is in text format and can by analysed to get a general idea about what
+the policy enforces. 
+
+SELinux confines processes into security bubbles called Domains. Domain is labeled with a certain Type.
+The Type applied to process decides what rules to enforce. 
+
+'sudo chcon (change context) $ARG $CONTEXT $PATH' command lets you change SELinux context on files. 
+'-u' argument lets you change User label. '-r' argument lets you change Role label. '-t' to change Type 
+label.
+
+'seinfo $CONTEXT' - list available labels for each context, ex. 'seinfo -u' to view user context labels
+
+'sudo chcon --reference=$PATH $PATH' - copy labels from one file to another
+
+'sudo restorecon (-R) $PATH' - restore or create labels based on conventions for directory specified' 
+'restorecon' command does not touch User and Role labels by default, only Type
+'sudo restorecon -F (-R) $PATH' - restore all labels, not just Type
+'sudo semanage fcontext --add --(type/role/user) $LABEL $PATH' - change label so that it's recurrent
+and set as default label for file or folder specified. 'restorecon' command then restores this label
+instead of label set by policy convention.
+'sudo semanage fcontext --list' - list all file contexts
+
+SELinux introduces booleans that change certain behaviors of SELinux. Most times when policy rules
+don't apply where they should, a global boolean is set. Use 'sudo semanage boolean --list' to view 
+available booleans. You can also use 'sudo getsebool' or 'sudo semanage boolean -l'.
+'sudo setsebool $BOOLEAN $VALUE' lets you change value of a boolean specified. You can then use
+'getsebool $BOOLEAN' to check the value of a boolean.
+
+'sudo semanage port --list' - see SELinux labels for certain ports
+'sudo semanage port --add --type $PORT_TYPE --proto $PROTOCOL $PORT' to assign a new port to specific
+port Type. change '--add' argument to '--delete' to remove a port.
+
+
+
