@@ -1,0 +1,39 @@
+sudo useradd -s $SHELL -d $HOME_DIR -u $ID $USER - add a user
+sudo passwd $USER - set password for user
+sudo userdel (-r to remove home dir) $USER - delete a user 
+
+/etc/passwd file contains all user and group info for each user
+id - see current user info, to see just username, use 'whoami'
+
+sudo useradd --system - create a system account. System accounts are used not for users, but rather
+for programs, especially daemons. This user won't have a home directory.
+
+sudo usermod -d $NEW_HOME_DIR -m $USER - move user's home directory to another path. '-m' argument moves
+files that were in the old home directory to a new directory. Without this argument only the location
+will change.
+
+sudo usermod -l $OLD_NAME $NEW_NAME - rename a user
+sudo usermod -L (or --lock) - disable (lock) user's account without deleting it
+sudo usermod -U (or --unlock) - unlock user's account
+sudo usermod -e (or --expiredate) $DATE $USER - make user expire on set date. Set blank date ("") to disable
+user expiration
+sudo chage -d (or --lastday) $DATE/DAYS $USER - change time on when a user has to change their password.
+Set to 0 to make them change their password on next login. Set to -1 to unrequire a password change.
+sudo chage -M (or --maxdays) $DAYS - make user change their password every number of days
+sudo chage -l (or --list) $USER - see user's change age settings
+groupadd/groupdel $GROUP - add or delete a group
+
+Each user can belong to one or more groups, but he has only one Primary Group (a so-called Login Group).
+When a process is started, it runs with group priviliges of a user and group that started it. It is the
+same when creating a file.
+
+sudo gpasswd --add $USER $GROUP - add user to a group
+groups $USER - see groups which user belongs to
+
+The first group that shows up is the Primary Group which the user belongs to
+sudo usermod -g $USER - change user's Primary Group
+sudo usermod -G $USER - change user's Secondary Group
+sudo groupmod $OLD_NAME -n (or --new-name) $NEW_NAME - rename a group
+sudo groupdel $GROUP - delete a group. You cannot remove user's Primary Group. If you want to delete such
+group, you first need to remove user from this group.
+
