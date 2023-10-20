@@ -1,0 +1,11 @@
+env - print environment variable
+$VARIABLE=$VALUE - change environment variable
+echo $VARIABLE - print a variable
+/etc/environment file contains global variables
+.bashrc file contains user-specific variables
+/etc/profile.d/ directory contains scripts that will be run on any :"user login
+/etc/skel folder contains a template for new users' home directories and environments
+
+to make Bash search for a command associated with a program you installed, you should add it to your
+PATH variable. The program's directory has to be preceded and ended with a colon ':YOUR/PATH:'. Then
+you can run your program straight from bash terminal instance.
