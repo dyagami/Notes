@@ -1,0 +1,73 @@
+sudo -i - enter root session as sudoer
+'su -' - log in as root
+sudo passwd root - set root password
+sudo passwd --lock root - lock root account
+sudo passwd -unlock root - unlock root account
+
+It's best to keep root account disabled for security purposes.
+
+PAM (Pluggable Authentication Module) is a system that let's us flexibly decide how we want certain
+utilities to perform authentication.
+
+/etc/pam.d/ folder contains files defining pluggable authentication modules for different utilities
+
+Modules in PAM files are loaded in order. If module tagged as 'sufficient' in control field is used
+to authenticate, the rest of modules after it are omitted.
+
+man pam.conf - see man page about PAM modules
+
+man pam_(autocomplete) - view man pages about each PAM module
+
+LDAP (Lightweight Directory Access Protocol) is a centralized server that lets you manage the same
+groups and accounts across multiple servers.
+
+LXC (Linux Containers) are hypervisored containers with entire operating system functionalityi.
+
+To run an LDAP Server on LXC:
+1. Install LXD:
+
+- Set SELinux to permissive
+sudo setenforce 0
+sudo sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+
+- Add EPEL repo to repolist
+sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+sudo dnf update
+
+
+- Enable and increase user namespaces for Linux containers
+sudo grubby --args="namespace.unpriv_enable=1" --update-kernel="$(grubby --default-kernel)"
+
+- Install snapd
+sudo yum install snapd
+
+- Once installed, the systemd unit that manages the main snap communication socket needs to be enabled
+sudo systemctl enable --now snapd.socketi
+
+- To enable classic snap support, create a symlink between /var/lib/snapd/snap and /snap
+sudo ln -s /var/lib/snapd/snap /snap
+
+- Add and increase user namespaces as Kernel and boot parameters (you need to do it as root using
+'su -' or 'sudo -i', using regular one-time sudo escalation won't work)
+grubby --args="user_namespace.enable=1" --update-kernel="$(grubby --default-kernel)"
+grubby --args="namespace.unpriv_enable=1" --update-kernel="$(grubby --default-kernel)"
+echo "user.max_user_namespaces=3883" | tee -a /etc/sysctl.d/99-userns.conf
+
+- Reboot system
+
+- Install LXD
+sudo snap install --classic lxd
+*if you get seed issue on Hyper-V, just restart snapd.seeded.service*
+
+- Add user to lxd group for them to be able to use LXD containers and change groupid for current login
+session to lxd
+sudo usermod -aG lxd $USER
+newgrp lxd
+
+- Initialize LXD environment
+lxd init
+
+2. Download example LDAP server
+
+
+
