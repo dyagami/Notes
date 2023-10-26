@@ -60,6 +60,7 @@ sudo snap install --classic lxd
 *if you get seed issue on Hyper-V, just restart snapd.seeded.service*
 
 - Add user to lxd group for them to be able to use LXD containers and change groupid for current login
+(it's better to run lxc containers with gid set to lxd for security reasons)
 session to lxd
 sudo usermod -aG lxd $USER
 newgrp lxd
@@ -75,32 +76,40 @@ lxc list - list our linux containers
 lxc start ldap-server
 lxc list (write down ipv4 address or check it on virtual NIC created by LXC)
 
-- install libnss-ldapd package (it's not available on CentOS, so here you'll use a workaround:
+- install libnss-ldapd package (it's not available on CentOS, so with it you'll use a workaround:
 	sudo dnf -y install openldap-clients sssd sssd-ldap oddjob-mkhomedir
 	- switch authentication provider to sssd
 	sudo authselect select sssd with-mkhomedir --force
 	sudo systemctl enable --now oddjobd.service
 	
 	- create /etc/sssd/sssd.conf file and write to it:
-[domain/default]
-id_provider = ldap
-autofs_provider = ldap
-auth_provider = ldap
-chpass_provider = ldap
-ldap_uri = ldap://dlp.srv.world/
-ldap_search_base = dc=srv,dc=world
-ldap_id_use_start_tls = True
-ldap_tls_cacertdir = /etc/openldap/certs
-cache_credentials = True
-ldap_tls_reqcert = allow
+	[domain/default]
+	id_provider = ldap
+	autofs_provider = ldap
+	auth_provider = ldap
+	chpass_provider = ldap
+	ldap_uri = ldap://dlp.srv.world/
+	ldap_search_base = dc=srv,dc=world
+	ldap_id_use_start_tls = True
+	ldap_tls_cacertdir = /etc/openldap/certs
+	cache_credentials = True
+	ldap_tls_reqcert = allow
 
-[sssd]
-services = nss, pam, autofs
-domains = default
+	[sssd]
+	services = nss, pam, autofs
+	domains = default
+	
+	[nss]
+	homedir_substring = /home
 
-[nss]
-homedir_substring = /home
 
-	reboot
-	DONE
+libnss-ldapd package installs nslcd (nameserver local daemon) service, which listens for LDAP server
+connections. Its configuration file can be found at /etc/nslcd.conf. It contains config specified in
+libnss-ldapd installation. 
+
+getent passwd - get entries with users and groups
+getent passwd --service ldap - get only users from ldap server
+
+sudo pam-auth-update - select 'create home directory on login' here to make users authenticated by
+ldap get their home directories created automatically by LDAP server.
 

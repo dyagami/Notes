@@ -1,0 +1,142 @@
+ip link - view network interfaces
+
+loopback interface is used when the system needs to point to itself, ex. local servers, databases, etc.
+Loopback interface has a hostname resolution of 'localhost' pointed to it.
+
+ip a - show IP addresses for each interface
+ip -c a - show IP addresses color-coded
+ip -4 a - show only IPv4 addresses
+sudo ip link set dev $INTERFACE (up/down) - bring interface up or down
+ip r - show root IP address
+ip n - neighbour devices with their IP addresses linked to their
+ MAC addresses (replacement for 'arp' command)
+ip netns - list kernel's IP netspaces (used for virtualization - you can use
+ them with virtual intefaces ONLY, not with the physical interfaces)
+
+sudo ip netns add $NAME - create namespace
+hostnamectl - view hostname properties
+hostnamectl set-hostname $HOSTNAME - the new way to change hostname
+sudo hostname $HOSTNAME - change hostname (you need to change it also in /etc/hostname and
+/etc/hosts file for the change to be persistent)
+
+Hosts file contains FQDNs (Fully-Qualified Domain Names) as well as pretty names and aliases
+You need to open new prompt (session) every time you change hostname for the change to take effect
+
+bash - start new prompt
+su $user - switch user | 'su -' - go into login prompt
+
+--different ways to view hostname--
+echo $HOSTNAME
+hostname
+cat /etc/hostname
+hostnamectl
+hostname -f - for Fully Qualified Domain Name
+
+hostname division:
+host | hostname | "$PRETTY_NAME"
+
+hostnamectl set-hostname "$PRETTY_NAME" - set pretty name
+pretty hostname is being stored in /etc/machine-info file
+
+!! - last command
+!$ - last argument
+![index] - command from history
+history - view history
+
+127.0.0.1 (loopback interface address) - IPv4 localhost
+::1 - IPv6 localhost
+
+--You can add multiple aliases in hosts file for each FQDN--
+192.168.0.102 server1.example.com server1 s1
+^ip address   ^FQDN		  ^alias  ^alias
+
+--Avahi software lets you view Multicast DNS devices on your network--
+
+getent $ENTRY - get entries related to string (note that these entries are taken
+from local directories and may not present the actual state of configuration that
+may be assigned dynamically/from a network)
+
+/etc/nsswitch.conf - Name Service Switch config - a file in which the order of name discovery
+is laid out for each database, ex. DNS entry is:
+'hosts:	files dns'.
+It means that domain names are taken from the hosts
+file in local files first and then from the DNS service)
+
+/etc/resolv.conf file contains DNS resolution configuration for local host. It is
+automatically created by NetworkManager. 'nameserver 192.168.0.1' line tells us
+that the local host is reaching out to the router (the network address) for the
+DNS configuration. We can edit it manually to reach out to specific DNS servers for
+name server configuration
+
+dig $DOMAIN - Domain Information Groper - returns information about DNS for specific domain
+(comes in handy in debugging DNS)
+dig $DOMAIN $DNS_SERVER(ex. 8.8.8.8) - forces the packet to go through DNS specified
+dig +short $DOMAIN $DNS - gives the same information, but simplified to only IP addresses
+dig +short $DOMAIN $DNS MX  - gives mail exchange records for domain specified via DNS specified
+
+ 
+--Regarding NTP (Network Time Protocol)--
+Linux Time is divided into hardware clock and system time. They should be synchronized with
+each other as well as with local real time. Using network services to synchronize system clock
+doesn't do the same with the hardware clock. The hardware clock's accuracy is actually determined by
+CPU clock speeds. The hardware clock keeps track of time and provides synchronization
+mechanisms for all the running processes. It provides a uniform scale of measurement.
+
+date - show current system clock date and time
+date --set="$YYYY$MM$DD $H:$M" - set current system time
+hwclock - show current hardware clock date and time
+hwclock --systohc - synchronise system clock to hardware clock
+hwclock --hctosys - synchronise hardware clock to system clock
+timedatectl - show time and date info
+timedatectl set-time "$YYYY-$MM-$DD $HH:$MM:$SS" - set current system time (automatic time
+synchronization has to be disabled for this to work"
+timedatectl set-ntp $boolean - toggle automatic time synchronization
+
+chronyd service is a time synchronisation daemon which can synchronise time with NTP servers,
+reference clocks like GPS receiver and manual input using wristwatch and keyboard via chronyc
+chronyc is a CLI-based program designed to monitor and configure chronyd daemon
+/etc/chrony.conf file contains time synchronization config for chronyd
+
+chronyc tracking - shows sychronisation server and synchronisation details
+chronyc sources - shows all servers you can synchronise to using chronyc
+NTP uses UDP port 123 to sychronise time. Both chronyd daemon and NTP daemon use this port to
+synchronise time via NTP, so one of them should be disabled to not interfere with the other
+
+/etc/ntp.conf file contains configuration for NTP daemon
+
+systemctl list-units - shows all services currently loaded into systemd memory
+
+---IP configuration---
+
+ip -4 a - show only IPv4 addresses
+enp0s3 - PCI BUS 0 slot 3
+
+10.0.2.21 /24 bit subnet mask
+Network 10.0.2
+Node .21
+First 24 bits make up the network and last 8 make up the host
+
+ip a s $INTERFACE - show addresses for interface specified
+
+ip addr add (ip a a) $ADDRESS dev $INTERFACE - add an IP address for a device
+ip addr delete $ADDRESS dev $INTERFACE - remove an IP address from device
+
+nmcli is a CLI version of NetworkManager.
+
+nmcli connection show - list connections
+nmcli connection add con-name $NAME ifname $INTERFACE type ethernet ip4 $IP gw4 $GATEWAY - 
+add a new connection for the interface specified
+nmcli connection up $INTERFACE - enable interface specified
+nmcli connection down $INTERFACE - disable interace specified
+
+/etc/sysconfig/network-scripts/ directory contains ifcfg config files for all current connections
+
+Netplan utility is Ubuntu's front-end for systemd_networkd service. It's configuration files are
+located in /etc/netplan/*.yaml
+
+sudo netplan try (--timeout $SECONDS) - try new network connection settings with a timer so you can 
+revert if you lose connectivity to a remote server  
+sudo netplan apply - apply new network connection settings permanently
+netplan get - print interface configuration from netplan config file
+
+
