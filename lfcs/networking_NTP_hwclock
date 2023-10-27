@@ -139,4 +139,6 @@ revert if you lose connectivity to a remote server
 sudo netplan apply - apply new network connection settings permanently
 netplan get - print interface configuration from netplan config file
 
+/etc/systemd/resolved.conf file contains global DNS configuration. You need to restart
+systemd-resolved.service for changes you make in that file to take effect.
 

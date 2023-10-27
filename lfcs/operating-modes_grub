@@ -1,3 +1,6 @@
+sudo systemctl get-default - get info about current target
+sudo systemctl set-default $TARGET - set default system target
+
 TARGETS:
 multi-user.target - text-based mode
 graphical.target - graphical mode
