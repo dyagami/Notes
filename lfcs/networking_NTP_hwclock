@@ -1,4 +1,4 @@
-ip link - view network interfaces
+ ip link - view network interfaces
 
 loopback interface is used when the system needs to point to itself, ex. local servers, databases, etc.
 Loopback interface has a hostname resolution of 'localhost' pointed to it.
@@ -7,7 +7,7 @@ ip a - show IP addresses for each interface
 ip -c a - show IP addresses color-coded
 ip -4 a - show only IPv4 addresses
 sudo ip link set dev $INTERFACE (up/down) - bring interface up or down
-ip r - show root IP address
+ip r - show IP routing table
 ip n - neighbour devices with their IP addresses linked to their
  MAC addresses (replacement for 'arp' command)
 ip netns - list kernel's IP netspaces (used for virtualization - you can use
@@ -123,13 +123,16 @@ ip addr delete $ADDRESS dev $INTERFACE - remove an IP address from device
 
 nmcli is a CLI version of NetworkManager.
 
+nmcli device reapply $DEVICE - reapply device's connection after alterations
 nmcli connection show - list connections
 nmcli connection add con-name $NAME ifname $INTERFACE type ethernet ip4 $IP gw4 $GATEWAY - 
 add a new connection for the interface specified
 nmcli connection up $INTERFACE - enable interface specified
-nmcli connection down $INTERFACE - disable interace specified
+nmcli connection down $INTERFACE - disable interface specified
+nmcli connection modify $INTERFACE autoconnect yes - make connection run at startup
 
-/etc/sysconfig/network-scripts/ directory contains ifcfg config files for all current connections
+/etc/sysconfig/network-scripts/ directory contains ifcfg config files for all current NetworkManager
+connections
 
 Netplan utility is Ubuntu's front-end for systemd_networkd service. It's configuration files are
 located in /etc/netplan/*.yaml
@@ -138,7 +141,53 @@ sudo netplan try (--timeout $SECONDS) - try new network connection settings with
 revert if you lose connectivity to a remote server  
 sudo netplan apply - apply new network connection settings permanently
 netplan get - print interface configuration from netplan config file
+/usr/share/doc/netplan/examples folder contains example Netplan configurations, including bonding
+and bridging
 
 /etc/systemd/resolved.conf file contains global DNS configuration. You need to restart
 systemd-resolved.service for changes you make in that file to take effect.
 
+'ss' (socket statistics) command shows current connections or listeners on sockets
+sudo ss -ltunp - (listening TCP UDP numeric process) - show listening sockets with numeric (IP:port)
+values with their corresponding process names
+
+Bridging lets you create a bridge between two networks, so devices can communicate through them
+
+Bonding, opposed to bridging a network, lets you treat two or more network cards as one, so they
+can be load balanced or have better throughput.
+
+Bonding in Linux works in one of 7 different modes:
+Mode 0 (Round-robin) - uses NICs in sequential order. For a certain amount of data NIC 1 is used and
+for a certain amount of data NIC 2 is used.
+Mode 1 (active-backup) - uses one interface active, and other inactive as backups
+Mode 2 (XOR) - source and destinations form pairs that always go through a specified interface
+Mode 3 (Broadcast) - all data is sent through all interfaces at once
+Mode 4 (IEEE 802.3ad) - increases throughput to more than a single interface can support
+Mode 5 (Adaptive Transmit Load Balancing) - load balances outgoing traffic, transfers data through
+NIC that is the least busy
+Mode 6 (Adaptive Load Balancing) - load balances outgoing and ingoing traffic
+In bond, all network interfaces are called "ports"
+
+When a bond is created by Netplan, it's configuration is located in /proc/net/bonding/$BOND_NAME
+
+UFW (Uncomplicated Firewall) utility is a port-based firewall that lets you manage IP rules easily.
+Rules in UFW, the same as in iptables, are applied in order.
+
+sudo ufw status verbose - check if UFW is filtering. 'verbose' option lets you see current policies.
+sudo ufw status numbered - check current policies in order they are applied
+sudo ufw $(allow/deny) $PORT - allow or deny incoming connections to a port through UFW on both TCP
+and UDP protocols
+sudo ufw $(allow/deny) $PORT/$(tcp/udp) - allow or deny incoming connections to a certain port 
+through either TCP or UDP
+sudo ufw allow from $IP to $IP(any) port $PORT - allow incoming connection from specified IP to
+specified (or any) IP on the machine on a port specified
+sudo ufw enable - enable UFW filtering
+sudo ufw delete $NUMBER - delete policy with number specified
+sudo ufw delete $(allow/deny) $PORT - delete all matching rules for port specified
+sudo ufw insert $NUMBER $REST_OF_RULE - insert a rule on a number specified and push all rules below
+this number down one spot
+sudo ufw $(allow/deny) out $REST_OF_RULE - allow or deny an outgoing connection 
+
+
+You can allow a range of IPs by adding a network address in a CIDR (Classless Inter-Domain Routing)
+notation. This will allow an entire CIDR block.
