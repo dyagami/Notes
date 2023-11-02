@@ -1,0 +1,33 @@
+- Create new config for load balancing
+sudo vim /etc/nginx/sites-available/lb.conf
+
+"
+
+upstream mywebservers {
+ server 1.2.4.4; #add "weight=$NUMBER" here to make server more prone to receiving requests
+ 		(the default weight is 1, so it will make $N:1 requests ratio). Add "down"
+		keyword to make server temporarily unavailable (ex. due to maintenance).
+ server 5.6.7.8;
+ server 9.9.9.9 backup; #Marking server as backup means that it will only be used if one of
+ 			the other ones goes down
+}
+
+ server {
+  least_conn; #use for adaptive load-balancing (using the least overloaded server), in other
+  		case load balancer uses round-robin method (picking random server)
+  listen 80;
+  location / {
+   proxy_pass http://mywebservers;
+   }
+  }
+
+"
+
+- Softlink file to "sites-enabled"
+sudo ln -s /etc/nginx/sites-available/lb.conf /etc/nginx/sites-enabled/lb.conf
+
+- Test Configuration
+sudo nginx -t
+
+- Reload Nginx service
+sudo systemctl reload nginx.service

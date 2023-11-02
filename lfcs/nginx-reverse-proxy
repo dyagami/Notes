@@ -1,0 +1,25 @@
+- Install Nginx
+sudo apt install nginx
+- Add a .conf file for proxy config
+sudo vim /etc/nginx/sites-available/proxy.conf
+
+"
+
+server {
+ listen 80;
+ location /{		#location that requests for will be proxied
+  proxy_pass http://1.1.1.1; #Destination webserver the proxy should redirect to
+  include proxy_params;  #/etc/nginx/proxy_params
+ }
+
+"
+
+- Softlink created file to sites-enabled directory (since Nginx only uses files in /etc/sites-enabled
+directory)
+sudo ln -s /etc/nginx/sites-available/proxy.conf /etc/nginx/sites-enabled proxy
+- Delete default config (it's a softlink too, so it won't be deleted completely from your system)
+sudo rm /etc/nginx/sites-enabled/default
+- Test for errors
+sudo nginx -t
+- Reload Nginx
+sudo systemctl reload nginx.service 

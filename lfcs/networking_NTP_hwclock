@@ -1,31 +1,54 @@
- ip link - view network interfaces
+-----Basics-----
+!! - last command
+!$ - last argument
+![index] - command from history
+history - view history
+bash - start new prompt
+su $user - switch user | 'su -' - go into login prompt
 
-loopback interface is used when the system needs to point to itself, ex. local servers, databases, etc.
-Loopback interface has a hostname resolution of 'localhost' pointed to it.
-
+-----IP commands-----
+ip link - view network interfaces
 ip a - show IP addresses for each interface
 ip -c a - show IP addresses color-coded
 ip -4 a - show only IPv4 addresses
 sudo ip link set dev $INTERFACE (up/down) - bring interface up or down
 ip r - show IP routing table
-ip n - neighbour devices with their IP addresses linked to their
- MAC addresses (replacement for 'arp' command)
+ip n - neighbour devices with their IP addresses linked to their MAC addresses (replacement for 'arp'
+command)
 ip netns - list kernel's IP netspaces (used for virtualization - you can use
  them with virtual intefaces ONLY, not with the physical interfaces)
+ip a s $INTERFACE - show addresses for interface specified
+ip addr add (ip a a) $ADDRESS dev $INTERFACE - add an IP address for a device
+ip addr delete $ADDRESS dev $INTERFACE - remove an IP address from device
+ip a s $INTERFACE - show addresses for interface specified
+ip addr add (ip a a) $ADDRESS dev $INTERFACE - add an IP address for a device
+ip addr delete $ADDRESS dev $INTERFACE - remove an IP address from device
 
+
+
+loopback interface is used when the system needs to point to itself, ex. local servers, databases, etc.
+Loopback interface has a hostname resolution of 'localhost' pointed to it.
+127.0.0.1 (loopback interface address) - IPv4 localhost
+::1 - IPv6 localhost
+
+ip -4 a - show only IPv4 addresses
+enp0s3 - PCI BUS 0 slot 3
+
+10.0.2.21/24 in CIDR (Classless Inter-Domain Routing) notation means that network has 24 bit subnet mask
+Network 10.0.2
+Node .21
+First 24 bits make up the network and last 8 make up the host
+
+
+-----Hostnames-----
 sudo ip netns add $NAME - create namespace
 hostnamectl - view hostname properties
 hostnamectl set-hostname $HOSTNAME - the new way to change hostname
+
 sudo hostname $HOSTNAME - change hostname (you need to change it also in /etc/hostname and
 /etc/hosts file for the change to be persistent)
 
-Hosts file contains FQDNs (Fully-Qualified Domain Names) as well as pretty names and aliases
-You need to open new prompt (session) every time you change hostname for the change to take effect
-
-bash - start new prompt
-su $user - switch user | 'su -' - go into login prompt
-
---different ways to view hostname--
+Different ways to view hostname:
 echo $HOSTNAME
 hostname
 cat /etc/hostname
@@ -38,23 +61,20 @@ host | hostname | "$PRETTY_NAME"
 hostnamectl set-hostname "$PRETTY_NAME" - set pretty name
 pretty hostname is being stored in /etc/machine-info file
 
-!! - last command
-!$ - last argument
-![index] - command from history
-history - view history
+Hostname needs to be change via 'hostname' command, in '/etc/hostname' file and in '/etc/hosts'.
+Hosts file contains FQDNs (Fully-Qualified Domain Names) as well as pretty names and aliases
+You need to open new prompt (session) every time you change hostname for the change to take effect
 
-127.0.0.1 (loopback interface address) - IPv4 localhost
-::1 - IPv6 localhost
-
---You can add multiple aliases in hosts file for each FQDN--
+You can add multiple aliases in hosts file for each FQDN
 192.168.0.102 server1.example.com server1 s1
 ^ip address   ^FQDN		  ^alias  ^alias
 
---Avahi software lets you view Multicast DNS devices on your network--
 
-getent $ENTRY - get entries related to string (note that these entries are taken
-from local directories and may not present the actual state of configuration that
-may be assigned dynamically/from a network)
+-----DNS (Domain Name System) config-----
+Avahi software lets you view Multicast DNS devices on your network
+
+getent $ENTRY - get entries related to string (note that these entries are taken from local directories
+and may not present the actual state of configuration that may be assigned dynamically/from a network)
 
 /etc/nsswitch.conf - Name Service Switch config - a file in which the order of name discovery
 is laid out for each database, ex. DNS entry is:
@@ -75,7 +95,7 @@ dig +short $DOMAIN $DNS - gives the same information, but simplified to only IP 
 dig +short $DOMAIN $DNS MX  - gives mail exchange records for domain specified via DNS specified
 
  
---Regarding NTP (Network Time Protocol)--
+-----NTP (Network Time Protocol)-----
 Linux Time is divided into hardware clock and system time. They should be synchronized with
 each other as well as with local real time. Using network services to synchronize system clock
 doesn't do the same with the hardware clock. The hardware clock's accuracy is actually determined by
@@ -106,20 +126,8 @@ synchronise time via NTP, so one of them should be disabled to not interfere wit
 
 systemctl list-units - shows all services currently loaded into systemd memory
 
----IP configuration---
+-----NetworkManager-----
 
-ip -4 a - show only IPv4 addresses
-enp0s3 - PCI BUS 0 slot 3
-
-10.0.2.21 /24 bit subnet mask
-Network 10.0.2
-Node .21
-First 24 bits make up the network and last 8 make up the host
-
-ip a s $INTERFACE - show addresses for interface specified
-
-ip addr add (ip a a) $ADDRESS dev $INTERFACE - add an IP address for a device
-ip addr delete $ADDRESS dev $INTERFACE - remove an IP address from device
 
 nmcli is a CLI version of NetworkManager.
 
@@ -134,6 +142,7 @@ nmcli connection modify $INTERFACE autoconnect yes - make connection run at star
 /etc/sysconfig/network-scripts/ directory contains ifcfg config files for all current NetworkManager
 connections
 
+-----Netplan-----
 Netplan utility is Ubuntu's front-end for systemd_networkd service. It's configuration files are
 located in /etc/netplan/*.yaml
 
@@ -151,6 +160,7 @@ systemd-resolved.service for changes you make in that file to take effect.
 sudo ss -ltunp - (listening TCP UDP numeric process) - show listening sockets with numeric (IP:port)
 values with their corresponding process names
 
+-----Bridges and Bonds-----
 Bridging lets you create a bridge between two networks, so devices can communicate through them
 
 Bonding, opposed to bridging a network, lets you treat two or more network cards as one, so they
@@ -170,6 +180,7 @@ In bond, all network interfaces are called "ports"
 
 When a bond is created by Netplan, it's configuration is located in /proc/net/bonding/$BOND_NAME
 
+-----UFW FIREWAL-----
 UFW (Uncomplicated Firewall) utility is a port-based firewall that lets you manage IP rules easily.
 Rules in UFW, the same as in iptables, are applied in order.
 
@@ -188,6 +199,7 @@ sudo ufw insert $NUMBER $REST_OF_RULE - insert a rule on a number specified and 
 this number down one spot
 sudo ufw $(allow/deny) out $REST_OF_RULE - allow or deny an outgoing connection 
 
-
 You can allow a range of IPs by adding a network address in a CIDR (Classless Inter-Domain Routing)
-notation. This will allow an entire CIDR block.
+notation. This will allow an entire CIDR block
+
+
