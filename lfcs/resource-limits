@@ -1,0 +1,26 @@
+To edit each user's resource limits on the system, you can edit /etc/security/limits.conf.
+Using asterisk as domain sets the limit for every user on the system. When you add limit
+for specific user, it overrides the asterisk limit. Asterisk limit only applies to users
+that are not mentioned in the file.
+
+Regarding the type field, a hard limit is a limit that cannot be raised by regular user
+no matter what. The soft limit is an initial limit that can be overriden by user. If you
+specify both, a user can raise his limit from soft to a maximum of a value that hard limit
+is set to. Dash means both soft and hard limit. The user cannot cross the dash limit. 
+
+example items are::
+nproc - maximum processes that can be run by user session
+fsize - maximum file size that can be created in this user session
+cpu - CPU time in minutes. If a process uses 100% of one CPU core for one second, it will
+use one second of it's allocated time.
+
+To see all items, look up man page of limits.conf file
+
+sudo -iu $USERNAME - make a real log in as another user
+ulimit -a - view limits for current session
+
+You can raise ulimit values using arguments specified in the output of "ulimit -a" command
+if the current user has soft and hard limits specified, but you can raise a limit only once,
+then you can only lower it.
+
+!ONLY EDIT SUDOERS FILE USING VISUDO COMMAND!

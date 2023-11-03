@@ -103,14 +103,25 @@ CPU clock speeds. The hardware clock keeps track of time and provides synchroniz
 mechanisms for all the running processes. It provides a uniform scale of measurement.
 
 date - show current system clock date and time
-date --set="$YYYY$MM$DD $H:$M" - set current system time
-hwclock - show current hardware clock date and time
-hwclock --systohc - synchronise system clock to hardware clock
-hwclock --hctosys - synchronise hardware clock to system clock
+sudo date --set="$YYYY$MM$DD $H:$M" - set current system time
+sudo hwclock - show current hardware clock date and time
+sudo hwclock --systohc - synchronise system clock to hardware clock
+sudo hwclock --hctosys - synchronise hardware clock to system clock
 timedatectl - show time and date info
-timedatectl set-time "$YYYY-$MM-$DD $HH:$MM:$SS" - set current system time (automatic time
+timedatectl list-timezones - see timezone list
+sudo timedatectl set-timezone $CONTINENT/$CITY - set desired timezone for the system
+sudo timedatectl set-time "$YYYY-$MM-$DD $HH:$MM:$SS" - set current system time (automatic time
 synchronization has to be disabled for this to work"
-timedatectl set-ntp $boolean - toggle automatic time synchronization
+sudo timedatectl set-ntp $boolean - toggle automatic time synchronization. Time synchronization
+daemon has to be installed for this to work.
+timedatectl show-timesync - show NTP synchronization servers
+timedatectl timesync-status - show NTP synchronization details
+
+systemd-timesyncd is a time synchronization daemon that works with systemd.
+/etc/systemd/timesyncd.conf file contains configuration for timesyncd. Uncomment and add servers
+to line starting with "NTP=" if you want specific timeservers to be used with timesyncd. 
+After editing timesyncd settings, you should restart systemd-timesyncd service for the changes
+to take effect.
 
 chronyd service is a time synchronisation daemon which can synchronise time with NTP servers,
 reference clocks like GPS receiver and manual input using wristwatch and keyboard via chronyc
@@ -122,22 +133,27 @@ chronyc sources - shows all servers you can synchronise to using chronyc
 NTP uses UDP port 123 to sychronise time. Both chronyd daemon and NTP daemon use this port to
 synchronise time via NTP, so one of them should be disabled to not interfere with the other
 
-/etc/ntp.conf file contains configuration for NTP daemon
+ntpd (NTP Daemon) is another time synchronization utility you can use with systemd.
+/etc/ntp.conf file contains configuration for NTP Daemon
 
-systemctl list-units - shows all services currently loaded into systemd memory
+systemctl list-units - shows all services currently loaded into systemd memory to check if system
+uses chronyd, systemd-timesyncd or ntpd
 
 -----NetworkManager-----
 
 
 nmcli is a CLI version of NetworkManager.
 
-nmcli device reapply $DEVICE - reapply device's connection after alterations
-nmcli connection show - list connections
-nmcli connection add con-name $NAME ifname $INTERFACE type ethernet ip4 $IP gw4 $GATEWAY - 
-add a new connection for the interface specified
-nmcli connection up $INTERFACE - enable interface specified
-nmcli connection down $INTERFACE - disable interface specified
-nmcli connection modify $INTERFACE autoconnect yes - make connection run at startup
+sudo nmcli device reapply $DEVICE - reapply device's connection after alterations
+sudo nmcli connection show - list connections
+sudo nmcli connection add con-name $NAME ifname $INTERFACE type ethernet ip4 $IP gw4 $GATEWAY - 
+sudo add a new connection for the interface specified
+sudo nmcli connection up $INTERFACE - enable interface specified
+sudo nmcli connection down $INTERFACE - disable interface specified
+sudo nmcli connection modify $INTERFACE autoconnect yes - make connection run at startup
+sudo nmcli connection modify $INTERFACE +ipv4.routes "$IP/$SUBNET $IP" - add a route to the routing
+table. After adding the route you need to reapply settings. You can use "-" instead of "+" to delete
+the route.
 
 /etc/sysconfig/network-scripts/ directory contains ifcfg config files for all current NetworkManager
 connections
@@ -202,4 +218,37 @@ sudo ufw $(allow/deny) out $REST_OF_RULE - allow or deny an outgoing connection
 You can allow a range of IPs by adding a network address in a CIDR (Classless Inter-Domain Routing)
 notation. This will allow an entire CIDR block
 
+-----FirewallD------
 
+FirewallD is a Linux Firewall, which manages rules in zones. Said zones contain specific
+set of rules for, for example Trusted Zone through which traffic goes by default, another, Zone 
+configured for specific NIC to be used with with less trust and so on.
+
+firewall-cmd --get-default-zone - check the default zone
+sudo firewall-cmd --set-default-zone=$NAME - set FirewallD's default zone
+sudo firewall-cmd --list-all - list all FirewallD rules
+sudo firewall-cmd --info-service=$NAME - view port number for service from list
+sudo firewall-cmd --add-service=$NAME (or sudo firewall-cmd --add-port=$PORT/$(tcp/udp)) - allow
+a service or port number through the firewall
+sudo firewall-cmd --remove-service=$NAME (or sudo firewall-cmd --remove-port=$PORT/$(tcp/udp) -
+remove service or port from allowed rules
+sudo firewall-cmd --add-source=$IP/$SUBNET --zone=$ZONE - add certain source network/IP into a zone
+firewall-cmd --get-active-zones - see current active zones
+sudo firwall-cmd --remove-source=$IP/$SUBNET --zone=$ZONE - remove source ip from the zone
+
+FirewallD rules added using commands are not permanent. To make them permanent you can use 
+"sudo firewall-cmd --runtime-to-permanent" command or add "--permanent" argument when adding a rule.
+Remember though that "--permanent" argument makes the rule permanent but not active for current
+session and using the command without this argument makes the rule not permanent, but active for
+current session.
+
+-----Routing------
+
+sudo ip route add $IP/$SUBNET via $IP dev $DEVICE - add static route to routing table
+sudo ip route del $IP - delete static route from routing table
+sudo ip route add default via $IP - add Default Gateway route
+
+The Default Gateway route is used when no other route to the destination is specified in the routing
+table.
+
+Routes added by the IP command are temporary. You can use NetworkManager to set the routes permanently. 
