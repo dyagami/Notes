@@ -1,0 +1,159 @@
+For DNS Request efficiency on our network, we can create a Caching DNS Server, which will be the
+first Resolver on path and will store different sites' IPs for our application or other server to
+get grasp on really quickly. Such functionality is introduced by Bind application.
+
+- Install Bind
+
+sudo dnf install bind bind-utils
+
+- Bind's configuration file is located at /etc/named.conf
+
+sudo vim /etc/named.conf
+
+"
+
+listen-on port 53 { 127.0.0.1; }; # For now, Bind listens on the loopback interface, which allows
+				  only connections from the same system to come through. We need
+				  to change this line adding main interface's IP address for it
+				  to listen to connections on the local (or wide-area, if you have
+				  public IP you can add) network. If we want Bind to listen for
+				  connections on any network attached to our server, we can add
+				  "any" keyword in the IP array.
+allow-query	{ localhost; };   # This line configures which IPs (or networks in CIDR notation)
+				  can query DNS from your caching server. Here you can also use
+				  "any" keyword to let requests come from any networks.
+recursion yes; 			  # This lets your DNS Server get data from DNS Servers on the 
+				  internet if it doesn't have it in its cache.
+
+"
+
+- Start and enable Bind
+
+sudo systemctl enable --now named.service
+
+- Allow incoming connections on DNS 53 port on firewall (in this case FirewallD)
+
+sudo firewall-cmd --add-service=dns
+
+- Make the rule permanent
+
+sudo firewall-cmd --add-service=dns --permanent
+
+- Check query time for the first time querying site vs when the site is already cached in Bind.
+
+dig @localhost google.com
+dig @localhost google.com
+
+;; ANSWER SECTION:
+google.com		261	IN	A	142.250.186.206
+			^ this number is DNS packet TTL (Time To Live) attribute. This means that
+			the DNS entry will become expired in 261 seconds and our DNS resolver
+			caching server will need to query and cache the entry again from the DNS
+			server on the internet.https://www.youtube.com/watch?v=WezeISjLSKA
+
+Bind's functionality is not limited to caching DNS. It can also maintain DNS zones. A DNS zone can
+group data for a specific domain. To enable DNS zones, edit /etc/named.conf
+
+"
+
+zone "example.com" IN {
+	type master; 			# This indicates that this is a master data, main information
+					about the zone available on the internet. There is also a
+					type called "slave" which is connected to master, takes data
+					from it and behaves as a backup. The slaves can still serve
+					DNS data to the internet while we fix the master server and
+					bring it back online.
+	file "example.com.zone";	# This tells bind where our zone file can be found
+};
+
+"
+
+- Bind keeps zone files, log files and other variable data in /var/named folder
+
+- To make a new zone file, you can copy the named.localhost file and use it as a template
+
+sudo cp --preserve=ownership /var/named/named.localhost /var/named/example.com.zone
+
+- Your new zone file needs to have the same ownership and group as the template for Bind to be able
+to read it (user root, group named)
+
+"
+
+$TTL 1H
+# example.com.	A	203.0.113.30 	#This data type has only one entry. Dot at the end specifies
+					a non-relative name. "@" in this case is abbreviation of
+					"example.com" and can be used relatively.
+
+@	IN SOA  @ administrator.example.com. (	# "SOA" means "Start of Authority"
+						"@" means that this entry applies to the original
+						domain, which is currently example.com. "IN" stands
+						for the internet. "administrator.example.com." is
+						the email address where you can obtain contact
+						information for person responsible for the zone.
+					0	; serial
+					# serial is a number that's synchronized between our zone
+					and other DNS servers' cache. When we change that number,
+					the cached DNS have to refresh their local copy to match
+					that number and get a fresh entry in result.
+					1D	; refresh
+					# refresh value tells other DNS servers how often to check
+					for updates
+					1H	; retry
+					# retry is the value that tells other DNS servers how long
+					they have to wait after a failed attempt to try requesting
+					data again
+					1W	; expire
+					# this value tells other Name Servers to stop serving
+					requests to your zone if your Bind server doesn't respond
+					for this period of time. 
+					3H )	; minimum
+					# this value tells other servers how long to cache negative
+					responses. Negative response is when a device asks your
+					Bind server for an entry that it doesn't have. This prevents
+					asking your server repeatedly for an entry it doesn't have.
+
+@		NS	ns1.example.com.  # "NS" field specifies a Name Server. Usually there will be 					       two Name Servers to be sure DNS requests are served when
+					  one goes offline.
+@		NS	ns2.example.com
+
+ns1		A	10.11.12.9	# Here you specify IP addresses for Name Servers
+ns2		A	10.11.12.10
+@		A	203.0.113.15	# This is an A type record, which specifies the main IP
+					address for your domain
+# WWW		A	203.0.113.15	# This specifies that typing www.example.com will also
+					redirect to your domain
+# WWW		CNAME	203.0.113.15	# CNAME (Canonical Record) record type is another way of
+					referencing WWW. You only want to use one type of WWW
+					reference. 
+# example.com.  MX 10 	mail.example.com	# This MX (Mail Exchanger) entry tells other servers
+						where they should send their emails. The first entry
+						has a number 10, meaning it has priority over the
+						second server with number 20.
+# example.com.  MX 20 	mail2.example.com
+# mail		A	203.0.133.80
+# mail2		A	203.0.113.81	# This specifies mail server IP, as it's an A type record
+# server1	AAAA	2001:DB8:10:::1 # This is the IPv6 entry that internet will sooner or later
+					migrate to
+#example.com.	TXT	"You can write anything in here!"  # This is the text entry that lets you
+							   serve whatever string you want to other
+							   DNS Servers
+
+"
+
+- Restart NameD deamon to make your changes work
+
+sudo systemctl restart named
+
+- Check if your DNS entries are resolved from localhost
+
+dig @localhost example.com
+
+- Check if you can resolve your mail servers
+
+dig @localhost mail1.example.com
+
+- Resolve full DNS query from localhost to check all entries
+
+dig @localhost ANY
+
+
