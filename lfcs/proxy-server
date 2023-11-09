@@ -1,0 +1,34 @@
+You can set up a proxy server in the internal network to route traffic through it instead of letting clients access
+web servers directly if you want to, for example, restrict website access, cache frequently accessed websites for
+efficiency, or maybe analyze the traffic for malicious files, links, protocols, etc. The proxy will essentially
+sit at the middle of communications from your network to other networks. A commonly used proxy daemon is called
+Squid.
+
+sudo dnf install -y squid && sudo systemctl enable --now squid.service
+
+By default, firewall will block connections to and from the service, so you should add a policy to allow it
+
+sudo firewall-cmd --add-service=squid
+sudo firewall-cmd --add-service=squid --permanent
+
+Squid configuration file is located at /etc/squid/squid.conf
+
+"
+
+acl localnet src 0.0.0.1-0.555.255.255  # acl stands for "Access Control List" and is an entry that enables routing
+					any network traffic from the specified IP or IP range through your proxy.
+					"src" type specifies a source IP.
+acl youtube dstdomain .youtube.com	# "dstdomain" type specifies destination domain as an acl
+acl SSL_ports port 443	# "port" type specifies a destination port on which proxy can be accessed
+http_access deny !Safe_ports 	# This line denies access through ports that are not specified by "Safe_ports" acl
+http_access deny to_localhost	# This line denies proxy users to access other services hosted on localhost. It's
+				a best practice to keep it uncommented.
+http_access allow localnet	# This line allows IPs specified in localnet acl to connect through your proxy
+http_access deny youtube	# This line denies proxy user access to youtube domain and any subdomains
+
+"
+
+After making changes to the squid.conf file, you should reload the service. Reloading the service lets people who
+may be doing something that will get denied with new configuration finish their work, ex. complete the downloading
+of a file o finish their YouTube browsing session. To enforce new rules for all sessions abruptly, you should
+instead restart the service.

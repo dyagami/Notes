@@ -1,0 +1,59 @@
+OpenSSH daemon is included in most Linux distributions and may be running by default. It's config is located at
+/etc/ssh/sshd_config. A similar naming convention applies to SSH Client, which configuration file is located at
+/etc/ssh/ssh_config. SSH Client is preinstalled on every Windows system from Windows 10 up and every Mac OS and
+Linux machine. Remember that you can find manual pages for config files too. Settings in sshd_config are global
+meaning anyone who tries to log in through SSH on the server will have these settings apply to them.
+
+sudo vim /etc/ssh/sshd_config
+
+"
+
+Port 22		# The default port is 22, it can be changed for security purposes (there are bots that are scraping
+		different IPs for default SSH port and trying password attacks on them)
+AddressFamily any 	# This specifies if SSHD should use IPv4 ("inet" option) IPv6 ("inet6" option) or both
+			("any" option)
+ListenAddress 0.0.0.0	# This specifies what IP SSHD should listen on (this is useful in situations where you have
+			two or more NICs connected to server and maybe you want to only allow connections from
+			certain networks, like only internal network, instead of internet too). SSHD listens for
+			incoming connections on all addresses by default.
+ListenAddress ::	# The same option for IPv6
+PermitRootLogin yes	# This allows root to log in from the SSH connection. Wise to keep it disabled for security
+			concerns.
+PaswordAuthentication yes	# This allows password logins, which do not require SSH keys to be present in
+				known_hosts file. It's generally better to allow SSH logins only with SSH keys,
+				which are more secure.
+X11Forwarding yes 	# This lets you forward X11 GUI-based application window through SSH to the Client
+
+Match User $USER
+	PasswordAuthentication yes 	# This syntax lets you set some option only for user specified
+
+"
+
+SSH Client keeps user configuration in ~/.ssh/config file. You can check options that are available to use in
+such file using "man ssh_config". The file needs to have read and write permissions for user and no permissions for
+everybody else for security purposes.
+
+"
+
+Host $name		# This specifies a predefined host for you to use "ssh $name" command alias instead of
+	HostName $IP	writing user and IP manually each time
+	Port 22
+	User $USERNAME
+
+"
+
+"ssh-keygen" command lets you create pair of SSH keys for current user. It creates id_rsa and id_rsa.pub files in
+~/.ssh directory. id_rsa.pub file contents is your public key that you can add to /etc/ssh/known_hosts file on your
+server to let you authenticate on this server with your private key as any user or you can add it to
+~/.ssh/authorized_keys file for the user you want to be able to log in as. You can transfer your public key to the
+user's authorized_keys file easily by using "ssh-copy-id $USER@$IP" command.
+
+ssh-keygen -R $IP - remove IP specified from local known_hosts file
+
+If you want to edit system-wide SSH Client configuration, you should create a new config file in
+/etc/ssh/ssh_config.d/ folder, because an SSH client update can overwrite the default config at /etc/ssh/ssh_config.
+The naming convention is $PRIORITY-$NAME.conf.
+
+
+
+
