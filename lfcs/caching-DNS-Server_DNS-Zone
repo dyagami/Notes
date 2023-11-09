@@ -124,7 +124,9 @@ ns2		A	10.11.12.10
 					redirect to your domain
 # WWW		CNAME	203.0.113.15	# CNAME (Canonical Record) record type is another way of
 					referencing WWW. You only want to use one type of WWW
-					reference. 
+					reference. CNAME entries can reference one human-friendly
+					name to another human-friendly name (which has to have an
+					A entry with IP address specified).
 # example.com.  MX 10 	mail.example.com	# This MX (Mail Exchanger) entry tells other servers
 						where they should send their emails. The first entry
 						has a number 10, meaning it has priority over the

@@ -1,0 +1,99 @@
+Emails in Linux are saved by default in /var/spool/mail/$USERNAME directory. You can set up email aliases for
+a user so mails sent to different addresses will all come to this one same user. To set up a a proof of concept,
+you will use software named postfix.
+
+sudo dnf install postfix -y && sudo systemctl enable --now postfix
+
+- Send example email to a user and see its contents
+
+sendmail $USER@localhost <<< "Hello, I'm just testing email"
+cat /var/spool/mail/$USER
+
+- Email aliases are defined in /etc/aliases file. You can add new alias for your user in this file
+
+sudo vim /etc/aliases
+
+"
+advertising:	$USER
+contact:	$USER1,$USER2,$USER3
+support:	support@somewebsite.com
+"
+
+- Inform postfix about new added alias
+
+sudo newaliases
+
+- Send emails to both aliases to test them. Email sent to advertising@localhost should arrive at
+/var/spool/mail/$USER.
+Emails sent to contact@localhost should arrive to three boxes at:
+/var/spool/mail/$USER1
+/var/spool/mail/$USER2
+/var/spool/mail/$USER3
+Emails sent to support@localhost will go to external server at support@somewebsite.com
+
+sendmail advertising@localhost <<< "Testing advertising alias"
+cat /var/spool/mail/$USER1
+sendmail contact@localhost <<< "Testing contact alias"
+cat /var/spool/mail/$USER1
+cat /var/spool/mail/$USER2
+cat /var/spool/mail/$USER3
+
+
+If you want to be able to receive your mail in external apps like MS Outlook, Thunderbird, or maybe some mobile
+app, you need to configure an IMAP Server. IMAP is short for Internet Message Access Protocol. A common IMAP daemon
+in Linux is Dovecot. An email client logs into Dovecot, which then retrieves your user's mail and sends it to the
+client. In the default configuration cClient and server are synchronized in a way that the client can control what
+mail is stored, deleted, sent, etc., but it can be changed. IMAP doesn't encrypt communication by default. IMAPS
+(IMAP over SSL) solves this. This is a legacy name, since SSL was faulty and was replaced by TLS. You can also call
+it IMAP Secure, so it doesn't get confusing. To use TLS with Dovecot, first allow IMAP connections in firewall (port
+143 for standard and 993 for TLS).
+
+sudo firewall-cmd --add-service=imap
+sudo firewall-cmd --add-service=imap --permanent
+sudo firewall-cmd --add-service=imaps
+sudo firewall-cmd --add-service=imaps --permanent
+
+- Now edit the configuration file at /etc/dovecot/dovecot.conf
+
+sudo vim /etc/dovecot/dovecot.conf
+
+"
+protocols = imap	# this is going to enable both IMAP and IMAPS
+listen = 10.11.12.9, ::	# use "*" for listen on all IPv4 addresses and :: for listen on all IPv6 addresses
+"
+
+Dovecot has its configuration divided into different files, as one file with all configuration would be too big to
+comprehend efficiently. These are locatd at /etc/dovecot/conf.d directory. You can find authentication-related 
+settings in 10-auth.conf file and 10-mail.conf file will determine where Dovecot should take mail from.
+In 10-ssl.conf file you can configure how the data sent received through the IMAPS should be encrypted. The numbers
+in naming convention of these files say what the priority of each file is. To change default ports Dovecot listens
+for incoming connections on, you can edit 10-master.conf file. To edit where mail is stored on your server, you can
+edit /etc/dovecot/conf.d/10-mail.conf file. 
+
+sudo vim /etc/dovecot/conf.d/10-mail.conf
+
+"
+	mail_location = mbox:~/mail:INBOX=/var/mail/%u  # "mbox:~/mail" part tells Dovecot to create mailbox for
+							each user in their home folder and keep their mail there
+
+"
+
+/var/mail directory is a symlink do /var/spool/mail directory, so they both point to the same place
+
+- To set up TLS on your server, edit /etc/dovecot/conf.d/10-ssl.conf
+
+"
+
+ssl = required		# This means that Dovecot will accept only Secured connections. To accept both encrypted and
+			unencrypted connections, change the value to "yes" instead of "required". As the proof of
+			concept doesn't cover generating SSL certificates, you will use the unencrypted connection.
+ssl_cert = </etc/pki/dovecot/certs/dovecot.pem 		# This is where you tell Dovecot where to find the
+ssl_key = </etc/pki/dovecot/private/dovecot.pem		certificate and private key
+
+"
+
+- Test your server with a GUI email application to see if it downloads your mail
+
+
+			
+
