@@ -1,0 +1,135 @@
+Hosting an HTTP server is enabled by Apache HTTP Server (httpd) service. By default, it hosts a web server on port
+80 (unencrypted HTTP).
+
+- Install httpd service and allow port 80 (HTTP) and port 443 (HTTPS) through your firewall
+
+sudo dnf install httpd -y
+sudo firewall-cmd --add-service=http && sudo firewall-cmd --add-service=https
+sudo firewall-cmd --add-service=http --permanent && sudo firewall-cmd --add-service=https --permanent
+
+- To allow https connections to your server, you need to install an additional package, which is mod_ssl
+
+sudo dnf install mod_ssl
+
+- Now you need to generate some SSL certificates for your server. Tools like Cert Bot may automate parts of this
+process, but you need a registered domain for these. First enable and start your httpd service.
+
+sudo systemctl enable --now httpd.service
+
+- Edit the main httpd configuration file located at /etc/httpd/conf/httpd.conf
+
+"
+
+Listen 10.11.12.9:80	# This is the default IP and port that http daemon is listening on
+ServerAdmin root@localhost # This is server's contact information for receiving emails about problems with server
+ServerName www.example.com:80	# This is your domain name by which the server identifies itself. If you don't
+				own a domain and want to access your web server by typing IP address in the URL
+				bar, just enter the IP here
+DocumentRoot "/var/www/html"	# this specifies which files HTTP Server should serve to the public
+
+"
+
+- To enable Apache to serve multiple websites on different subdomains on one Server, you should create a new
+configuration file in /etc/httpd/conf.d/
+
+sudo vim /etc/httpd/conf.d/two-websites.conf
+
+"
+
+<VirtualHost *:80>
+	ServerName store.example.com
+	DocumentRoot /var/www/store/
+	CustomLog /var/log/httpd/store.example.com_access.log combined  # CustomLog has to have one of the
+									LogFormats that were declared in
+									/etc/httpd/conf/httpd.conf specified here
+	ErrorLog /var/log/httpd/store.example.com_error.log
+</VirtualHost>
+
+<VirtualHost *:80
+	ServerName blog.example.com
+	Documentroot /var/www/blog/
+</VirtualHost>
+
+#<VirtualHost 10.11.12.9:80>  	# If you wanted to host a website only for one of server's NICs (i.e. internal
+				network for your employees), you could specify an IP here instead of using asterisk
+
+"
+
+
+- After changing Apache configuration you should check it using "apachectl configtest" command
+
+apachectl configtest
+
+Apache's default SSL settings are located at /etc/httpd/conf.d/ssl.conf. Utilities like Cert Bot will create .conf
+files for SSL configuration in /etc/httpd/conf.d/ directory, which willl look like this:
+
+"
+
+<VirtualHost *:443
+	ServerName www.example.com
+	SSLEngine on
+	SSLCertificateFile "/path/to/file.cert"
+	SSLCertificateKeyFile "path/to/file.key"
+</VirtualHost>
+
+"
+
+Whenever you need new functionality for your server, you can install modules like mod_ssl. These will be added as
+.conf files in /etc/httpd/conf.module.d/ directory. You can enable and disable them by commenting and uncommenting
+lines in module .conf files
+
+By default, httpd keeps two log files - the error log and the access log. In the access log you can see who visited
+your website, what pages they accessed, and their info. Logs are located in /etc/httpd/logs. They are also kept in
+/var/log/httpd directory. Since Apache is modular, logging is also included in a module. Apache log format can
+be customized to meet your needs.
+
+To restrict unwanted access to your web server's files from the outside, first edit the /etc/httpd/conf/httpd.conf
+file
+
+"
+
+<Directory "/var/www/html">
+	Options Indexes FollowSymLinks		# "Indexes" option lets a website visitor view file indexes when
+						index file is not present. It's a best practice to disallow this
+						type of behavior. 
+	AllowOverride None			# This option disables .htaccess files from overriding httpd
+						settings for different directories. Setting it to "All" will
+						enable such functionality.
+</Directory>
+
+<Directory "/var/www/html/admin">
+#	Require all denied 	# This option lets you restrict access to the directory for everybody
+	Require ip 192.168.1.79 203.0.1.113  # This lets you allow access only from specific IP addresses - in
+					     this case one internal and one external. Leaving out the last octet
+					     of the IP address specifies a whole network range. You can also
+					     specify network address in a CIDR format
+</Directory>
+
+<Files ".txt">
+	Require all denied	# This will deny access to all files with the .txt extension
+</Files>
+
+"
+
+- You can also protect some areas of your web pages with passwords. "htpasswd" command lets you create or append
+to a file with user and hashed password combinations. Use "-c" argument to create or overwrite a new file or
+omit it to append to an existing file. Use "-D" argument to delete the password for username specified.
+
+sudo htpasswd -c /etc/httpd/passwords $USERNAME
+
+- Now edit /etc/httpd/conf/httpd.conf file again and change Directory Block you have added before
+
+"
+
+<Directory "/var/www/html/admin/">
+	AuthType Basic
+	AuthBasicProvider file
+	AuthName "Secret admin page"
+	AuthUserFile /etc/httpd/passwords
+	Require valid-user
+</Directory>
+
+"
+
+This will prompt for a username and password every time someone tries to access content present in
+/var/www/html/admin directory
