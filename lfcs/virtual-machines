@@ -1,0 +1,8 @@
+Popular virtualization software for Linux is QEMU (Quick Emulator) KVM (Kernel-based Virtual Machine), which are
+actually two pieces of software that interconnect. QEMU simulates a virtual computer and KVM is a code included
+in the Linux kernel that uses hardware technology meant to speed up virtual machines. There's a CLI-based
+front-end for managing virtual machines called Virsh. 
+
+- Install Qemu and Virsh
+
+sudo dnf install -y libvirt qemu-kvm
