@@ -1,0 +1,37 @@
+The most widely used database server software is called MariaDB. It's an open-source  fork of MySQL, so it will
+work in a very similar way.
+
+- Install, start and allow MariaDB through firewall. Since MariaDB is a fork of MySQL, it will use the same ports
+and "MySQL" keyword will still appear throughout many commands.
+
+sudo dnf install mariadb-server
+sudo systemctl enable --now mariadb.service
+sudo firewall-cmd --add-service=mysql
+sudo firewall-cmd --add-service=mysql --permanent
+
+
+You will need to configure MariaDB, since default configuration lets anynone on the system log in as superuser
+using "mysql -u root" command. You can do so very simply, by issuing "mysql_secure_installation" command. A wizard
+will walk you through the hardening process. MariaDB configuration file is located at /etc/my.cnf. This file is
+almost blank and points to /etc/my.cnf.d directory. There you will find mariadb-server.cnf file, which will 
+contain most of MariaDB's configuration. It can be treated as the main MariaDB configuration file. 
+
+"
+
+[mysqld]
+datadir=/var/lib/mysql 		# This variable sets directory of the databases
+socket=/var/lib/myssql/mysql.sock 	# This variable sets socket file location. Most of applications that will
+					use MariaDB will look for socket to enter through in the default location.
+log-error=/var/log/mariadb/mariadb.log	# That's the file where errors are going to be logged
+pid-file=/run/mariadb/mariadb.pid	# This files stores PID of a process under which database daemon runs
+
+
+[galera]
+bind-address=0.0.0.0 	# This is the address that MariaDB listens on. By default, it listens on every IP on the
+			internet.
+
+"
+
+If you're ever forced to use legacy MySQL server, the main configuration file will be located in the same directory
+under "mysql-server.cnf" filename. 
+
