@@ -1,0 +1,30 @@
+Containers enable encapsulation of applications so you can move them seamlessly between different systems, make
+easy-to-restore backups, deploy them in a scalable manner across multiple servers, and more. The widely popular
+containerization software is called Docker. Docker is essentially a more lightweight virtualization technology.
+It behaves as if a virtual machine was run, with image's binaries and libraries loaded, but with the need of Guest
+OS eliminated. Everything runs from one image file on top of Docker Daemon to create a virtual environment
+you can easily deploy, copy, share and delete. Docker uses client-server architecture which is managed by Rest API.
+Docker Server is divided into Registry and Daemon. Docker Registry contains images of Containers that are being
+pulled into Docker Daemon. Container is a software package that consists of all the dependencies required to run
+an application on top of Docker Daemon. Containers maintain isolated applications which can all run on the same
+hardware at the same time. Docker Daemon is managed through Docker Client, which is controlled by end user with
+Docker CLI. A Docker Image is built using a file called Docker File. Docker Image is a template with instructions,
+which is used for creating Docker Containers. Docker Container is a standalone, executable software package which
+includes applications and their dependencies (instructions for what your environment will look like). Each
+running container is isolated. Containers in the Registry are controlled by simple push/pull commands. Repositories
+in Docker Registry can be either public or private.
+
+Docker File creates a Docker Image using "build command". A Docker Image contains all of the project's code. Using
+Docker Image, any user can run the code in order to create Docker Containers. 
+
+If your user is not a part of docker group, you should run Docker
+commands with sudo or add it to docker group, log out and log back in.
+
+docker --help - see available Docker commands
+docker search - search Docker Hub for images
+
+Docker images have different versions. In your case, nginx has its Ubuntu version as an alternative to default
+official image.
+
+docker pull nginx
+docker pull ubuntu/nginx
