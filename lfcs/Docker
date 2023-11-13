@@ -1,0 +1,66 @@
+Containers enable encapsulation of applications so you can move them seamlessly between different systems, make
+easy-to-restore backups, deploy them in a scalable manner across multiple servers, and more. The widely popular
+containerization software is called Docker. Docker is essentially a more lightweight virtualization technology.
+It behaves as if a virtual machine was run, with image's binaries and libraries loaded, but with the need of Guest
+OS eliminated. Everything runs from one image file on top of Docker Daemon to create a virtual environment
+you can easily deploy, copy, share and delete. Docker uses client-server architecture which is managed by Rest API.
+Docker Server is divided into Registry and Daemon. Docker Registry contains images of Containers that are being
+pulled into Docker Daemon. Container is a software package that consists of all the dependencies required to run
+an application on top of Docker Daemon. Containers maintain isolated applications which can all run on the same
+hardware at the same time. Docker Daemon is managed through Docker Client, which is controlled by end user with
+Docker CLI. A Docker Image is built using a file called Docker File. Docker Image is a template with instructions,
+which is used for creating Docker Containers. Docker Container is a standalone, executable software package which
+includes applications and their dependencies (instructions for what your environment will look like). Each
+running container is isolated. Containers in the Registry are controlled by simple push/pull commands. Repositories
+in Docker Registry can be either public or private.
+
+Docker File creates a Docker Image using "build command". A Docker Image contains all of the project's code. Using
+Docker Image, any user can run the code in order to create Docker Containers. 
+
+If your user is not a part of docker group, you should run Docker
+commands with sudo or add it to docker group, log out and log back in.
+
+docker --help - see available Docker commands
+docker search - search Docker Hub for images
+
+Docker images have different versions. In your case, nginx has its Ubuntu version as an alternative to default
+official image. If you don't specify a version, Docker is going to download the latest default version.
+
+To download different versions of Nginx images, you can issue the following commands:
+
+docker pull nginx
+docker pull ubuntu/nginx
+
+docker images - view currently installed Docker images
+docker rmi (remove image) $IMAGE - delete an image
+docker run $IMAGE - Run an image as a new Container. To detach Docker Container from current terminal window, use
+"--detach" argument while running the image. "--publish $PORT:$PORT" option publishes Container to the WAN. First
+port in the argument is a port from which the traffic will be redirected to Container and second port is the
+destination port on which the Container will receive traffic. In case of Nginx, you will redirect traffic from
+your desired port to port 80/443 to reach the web server. "--name" argument names the Container upon creation. 
+
+docker ps - view running Containers. Add "-a" argument to see all Containers including the ones stopped.
+docker start $CONTAINER - run an older Container
+docker rm $CONTAINER - delete a container
+
+You cannot remove an image on which the currently created Container depends. You cannot remove a running Container.
+If you want to remove an image, you need to first stop and remove all Containers which depend on it. If you use
+"man docker run" command, you will find out about restart policy. You can set it to either always restart, restart
+on failure or restart until stopped. 
+
+To build on top of or create new Docker image, you should make folder for your image, navigate to it, make changes
+and create a file called "Dockerfile".
+
+"
+
+FROM nginx	# Use existing image to build on top of
+COPY index.html /usr/share/nginx/html/index.html 	# Copy a file from your image folder to a desired location
+RUN $COMMAND	# This tells Docker what command it should run upon building the image
+CMD $COMMAND	# This tells Docker what command it should issue inside the Container after it starts up. This
+		command is optional and will be ommited if user provides some other way to run the Container
+ENTRYPOINT $COMMAND 	# This tells Docker to issue a forced, non-optional command upon Container startup
+
+"
+
+docker build --tag $REPOSITORY/IMAGE_NAME:$VERSION $DIRECTORY - build your own Docker image. The repository name
+can be ommited. 
