@@ -63,4 +63,7 @@ HOSTNAME variable contains the hostname of your local machine
 HOSTTYPE variable contains processor architecture that the current computer is on
 PS1 (Prompt String 1) variable contains the prompt string shown in the terminal before each command
 
+You can manipulate value of a variable while referencing it.
+
+{name,} translates first letter of the variable to lowercase
 
