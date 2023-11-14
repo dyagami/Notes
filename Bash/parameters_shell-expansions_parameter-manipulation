@@ -1,0 +1,66 @@
+Parameter is any entity that stores values. Shell parameters are used to store and reference
+useful data that you can use in your scripts. Shell parameters are categorized into Variables,
+Positional Parameters and Special Parameters. 
+
+User-defined Variables are declared as follows, using all lowercase:
+
+"
+
+name="string"
+name=1
+name=1.1
+name= "$COMMAND"
+
+"
+
+You can also declare variables directly from the terminal window by using "name=$VALUE" command or
+sourcing a file with variables using "source $FILE". For the variables in source file to be able
+to be sourced, you first need to add "export $VARIABLE" command in such file. You can modify Shell
+Variables like that too, although they might revert after logout or restart, since some of them
+are defined in startup or logon scripts on your system. If you know of such file, you can source
+it to revert the manual change you did to the Shell Variable.
+
+"
+
+lain@WIRED:~$ PS1="$: "
+	   $: source ~/.bashrc
+lain@WIRED:~$
+
+"
+
+To reference any parameter in your code, you can use curly brackets with a dollar sign in front
+of a parameter name or just dollar sign and parameter name. This process is called Parameter 
+Expansion:
+
+"
+
+student="Sarah"
+echo "Hello {$student}"
+
+OUTPUT:
+
+Hello Sarah
+
+"
+
+User-defined Variables are different than Shell Variables. Shell Variables are defined by Shell
+and help with learning about different system information, let you toggle some functions, are
+referenced by different commands and scripts and generally can make your scripting more efficient
+and to-the-point. Shell Variables are defined using all uppercase for consistency purposes.
+
+There are two types of Shell Variables - Bourne Shell Variables and Bash Shell Variables. As Bash
+is a newer version of Bourne Shell, it does contain some of Bourne Shell's variables. As Bash
+developed over time, new variables were added that are unique to Bash, which are called Bas
+Variables. Sometimes these variables will be available to be used by you on hand in your scripts
+or commands. Other times these variables will be significant to a specific command, which will read
+data from or save data to one of these specifically named variables.
+
+PATH variable is a Bourne Shell Variable that stores directories in which the system will look for
+executables when you issue a command or it's referenced by another program or command.
+HOME variable is used to store the absolute path to the current user's home directory.
+USER variable contains the username of the current user
+HOSTNAME variable contains the hostname of your local machine
+HOSTTYPE variable contains processor architecture that the current computer is on
+PS1 (Prompt String 1) variable contains the prompt string shown in the terminal before each command
+
+

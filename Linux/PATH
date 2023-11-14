@@ -1,0 +1,20 @@
+PATH is a variable that tells your system where to look for executable files. When you issue a
+command, the system looks for executable files with the same name as the command in directories
+specified in PATH. You can add your custom scripts or any other programs to your PATH variable 
+to make them accessible from within any terminal window, no matter the directory you are in. 
+
+To update PATH variable so that the change is persistent, you should add new line to your ~/.profile
+file. .profile file is usually loaded when the shell boots up. To read an updated script into PATH,
+you should either logout and log in to terminal back again or use "source ~./profile" to load
+.profile file again.
+
+"
+
+export PATH="$PATH:$HOME/bash_scripts"
+
+"
+
+Adding your own script folder further to the left of the PATH variable ensures that your custom
+commands will not overwrite system commands if they happen to have the same name. After adding
+your directory to PATH, the only thing you have to do for your scripts to work from anywhere in
+the terminal, is to add them in the same folder.

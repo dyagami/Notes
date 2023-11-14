@@ -1,0 +1,25 @@
+A Bash script has to have three different core components for it to be written correctly. First,
+you have to add a so-called Shebang, which is a directory for the interpreter that should be used
+to read your script. Shebang line looks like this:
+
+#!/bin/bash
+
+This directory will be different if you use different interpreter than Bash (Zsh, Csh, Sh, etc.)
+
+After the Shebang, you should put your script's code with Bash commands and preferably comments
+about what each function, logic or line does (This is the best practice to make your code easy to
+interpret by someone else, or yourself if your code starts getting  long and complicated). You may
+want to add usage instructions, Time Created, Time Last Modified, Author or Description in comments.
+Usage instructions and inline comments are bare minimum to let someone know how to use your script.
+
+At the end of the script (and in some cases in your code), you should put an exit statement.
+"exit 0" means that the script exited successfully with no errors and should be placed as the last
+line of each script to indicate that it was executed correctly. Any other number than 0 indicates
+that there were errors in running the script.
+
+Script has to have .sh extension for it to work. To run a script, user has to have execute
+permissions on the script file. To add such permission, you should use the following command:
+
+sudo chmod u+x $FILE.sh
+
+
