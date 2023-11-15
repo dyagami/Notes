@@ -1,0 +1,10 @@
+Command substitution is similar to similar to Shell Expansion, but instead of giving you
+manipulated output, it gives you output of a command. Syntax for Command Substitution is
+dollar sign with parentheses and a command inside of them - "$(command)". You can also
+store command's output in a user-defined variable.
+
+time=$(date +%H:%m:%S)
+
+You can also use Command Substitution to run command inside other command.
+
+tar -cvf ~/backups/backup_"$(date +%d-$m-%Y_%H-%M-%S)".tar ~/* 2>/dev/null
