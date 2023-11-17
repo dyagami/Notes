@@ -5,4 +5,64 @@ front-end for managing virtual machines called Virsh.
 
 - Install Qemu and Virsh
 
-sudo dnf install -y libvirt qemu-kvm
+sudo dnf install -y libvirt qemu-kv
+
+Libvirt includes utilities that let you interact with virtual machines and QEMU lets you create and run them.
+After installing QUEMU and Virsh, you should create an .xml configuration file for your virtual machine. 
+
+"
+
+<domain type="qemu">
+	<name>TestMachine</name>	# Name of your machine
+	<memory unit="GB">1</memory>	# Amount of allocated RAM
+	<vcpu>1</vcpu>		# Amount of allocated virtual CPU cores
+	<os>
+		<type arch='x86_64'>hvm</type>	# Os type and architecture, "hvm" stands for "Hardware Virtual
+						Machine". A real virtual machine needs storage, network card and
+						an operating system installed, "hvm" will be a keyword here to
+						start a barebones bootable machine.
+	</os>
+</domain>
+
+"
+
+- Define machine from your configuration file with Virsh
+
+virsh define $FILENAME.xml
+
+In Virsh's context, "domain" basically refers to a virtual machine.
+
+- Start your newly defined virtual machine
+
+virsh start $NAME
+
+virsh shutdown $NAME - Set shutdown signal to your virtual machine
+virsh reboot $NAME - Reboot your virtual machine. This basically sends reboot signal to the operating system
+running on your virtual machine, so the reboot should be a graceful process that lets applications save their
+data.
+virsh reset $NAME - Do a hard reboot for your machine
+virsh destroy $NAME - Do a hard poweroff for your machine
+virsh undefine $NAME - Delete your machine. Machine has to be powered off for this to work.  This only deletes the
+machine, but leaves its data (virtual hard disks, etc.)
+virsh udefine --remove-all-storage - Completely remove machine with all of its data.
+virsh autostart (--disable) $NAME - Enable or disable autostart with host OS boot for your machine
+virsh dominfo $NAME - View info about your virtual machine
+virsh set vcpus $NAME $COUNT (--config/--live/--current/--guest/--hotpluggable/--maximum) - set virtual CPU count
+for your virtual machine
+	--config - affect next boot
+	--live - affect running domain
+	--current - affect current domain
+	--guest - modify cpu state in the guest
+	--hotpluggable - make added vcpus hot(un)pluggable
+	--maximum - set maximum limit on next boot
+virsh setmaxmem $NAME $SIZE (--config...) - Set maximum RAM for your virtual machine
+
+
+Ubuntu uses different software for virtual machines, which is called virt-manager.
+
+Install virt-manager and download an operating system image (in this case you'll use Ubuntu cloud-optimized .img minimal distribution
+image)
+
+sudo apt install virt-manager -y
+wget https://cloud-images.ubuntu.com/minimal/releases/jammy/release/ubuntu-22.04-minimal-cloudimg-amd64.img
+
