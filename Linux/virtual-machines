@@ -66,3 +66,7 @@ image)
 sudo apt install virt-manager -y
 wget https://cloud-images.ubuntu.com/minimal/releases/jammy/release/ubuntu-22.04-minimal-cloudimg-amd64.img
 
+You can get info on the image using "qemu-img info $FILENAME". This particular image's virtual size is 2.2 GiB.
+This means that the virtual disk on this image is configured to have size of 2.2 GiB. To expand the size of the
+virtual disk, you can run "qemu-img resize $FILENAME $SIZE".
+
