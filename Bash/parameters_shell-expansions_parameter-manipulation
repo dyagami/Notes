@@ -81,3 +81,49 @@ take the rest of the value up to the end. Remember to leave out the colon, other
 think that you put zero as the lenght. Put a negative offset value with space before it to count
 offset from the end of the parameter's value.
 
+Arithmetic Expansion is a Parameter Expansion type which lets you perform arithmetics in shell.
+Arithmetic Expansions works only on integer numbers, not decimal numbers. Syntax "$((parameter))" 
+will return a result of arithmetic operators you put in the parentheses. You can use variables
+inside Arithmetic Expansion without dollar signs and it will work the same. Shell takes into
+consideration order of operations, so you don't have to consider this while writing the parameter.
+If you want to manually change the order of operations, you have to put into parentheses the 
+operation you want to be done first. 
+
+"**" performs exponentiation, which is raising one number to the power of other number.
+"%" is a modulo opertator, which gives a remainder of division.
+bc (basic calculator) is a programming language in and of itself, which can work with with numbers
+to any number of decimal places. bc has an interactive interface which you can open by issuing
+"bc" command. In your scripts, instead of using bc interactively, you will pipe the echo with
+operation to bc command. bc has internal variable "scale" that defines to how many places after
+the decimal point the result output will be calculated.
+
+"
+
+echo "5/2" | bc
+2
+echo "scale=2; 5/2" | bc
+2.50
+
+"
+
+Tilde Expansion lets you easily switch between different home directories and your current and
+previous working directories. It's performed using tilde character. Sole tilde character performs
+expansion to current user's home directory. It's actually expanding to the current value stored in
+$HOME shell variable.
+
+"~$USER" performs Parameter Expansion to a home directory of the user specified.
+
+Bash stores current working directory in an internal variable $PWD (which is called by using "pwd"
+command). This variable changes each time you change working directory. The previous directory that
+you were in is stored in a variable called $OLDPWD. "~+" is a shortcut to referencing $PWD$
+variable. "~-" is a shortcut to referencing $OLDPWD$ variable. Every time you change directory,
+$PWD and $OLDPWD variables are updated. That means if you want to switch back and forth between
+two directories, you can use "~-" parameter repeatedly. 
+
+Brace Expansion lets you refer to different lists in Bash. Brace Expansion has to have no spaces
+between each element for Bash to interpret it correctly. If you put a space inside Brace Expansion,
+Bash will interpret it as a whole parameter.
+String Lists can contain any set of individual characters or words - {a,19,z,barry,42}
+Range Lists let you rapidly expand to sequences of characters that follow a particular pattern, ex.
+numbers 1 to 100 or letters A to Z. - {1..100}. Range Lists also work in reverse and you can add a
+step to them - {10..1..2} 
