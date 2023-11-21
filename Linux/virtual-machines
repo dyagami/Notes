@@ -58,10 +58,11 @@ for your virtual machine
 virsh setmaxmem $NAME $SIZE (--config...) - Set maximum RAM for your virtual machine
 
 
-Ubuntu uses different software for virtual machines, which is called virt-manager.
+Ubuntu uses another software for virtual machines, which is called virt-manager. It normally utilizes a GUI, but
+you can alse use it in CLI.
 
-Install virt-manager and download an operating system image (in this case you'll use Ubuntu cloud-optimized .img minimal distribution
-image)
+- Install virt-manager and download an operating system image (in this case you'll use Ubuntu cloud-optimized
+.img minimal distribution image)
 
 sudo apt install virt-manager -y
 wget https://cloud-images.ubuntu.com/minimal/releases/jammy/release/ubuntu-22.04-minimal-cloudimg-amd64.img
@@ -69,4 +70,53 @@ wget https://cloud-images.ubuntu.com/minimal/releases/jammy/release/ubuntu-22.04
 You can get info on the image using "qemu-img info $FILENAME". This particular image's virtual size is 2.2 GiB.
 This means that the virtual disk on this image is configured to have size of 2.2 GiB. To expand the size of the
 virtual disk, you can run "qemu-img resize $FILENAME $SIZE".
+
+Virtual machines need access to a storage pool. A storage pool is where machine will store all of the disk images, 
+snapshots and other data. By default it will use /var/lib/libvirt path. 
+
+- Copy downloaded Ubuntu image to images folder in /var/lib/libvirt
+sudo cp ./ubuntu-22.04-minimal-cloudimg-amd64.img /var/lib/libvirt/image
+
+To create a virtual machine from image, you should use "virt-install" command. It's a really sophisticated tool that
+has hundreds of combinations of arguments. The ones you will need as a beginner are:
+
+virt-install \
+
+	--name $NAME
+	--memory 2048
+	--arch amd86-64
+	--disk ubuntu-22.04-minimal-cloudimg-amd64.img
+	--graphics none
+	--osinfo ubuntujammy
+
+In current use case, you will use "--import" argument, which lets you skip installing OS on top of disk image and
+just imports existing disk with preinstalled OS. You need to find out which OS you will be using (all OSs are listed
+using "virt-install --osinfo list" command) and specify it in "--osinfo" argument. If you do not know or cannot find
+out OS of the image, you can use "--osinfo detect=on" argument option or use a generic value from the list like
+"--osinfo linux2022".
+
+virt-install --import -n UbuntuJammyHeadless --memory 2048 --vcpus 1 
+--disk /var/lib/libvirt/ubuntu-22.04-minimal-cloudimg-amd64.img --graphics none
+
+This will boot up your machine and connect you to its terminal. To escape the terminal, use sequence "ctrl + ]".
+You can always go back to the terminal of running machine (domain) using "virsh console $DOMAIN" command. Use
+"virsh list -all" to see all running domains. 
+
+- You don't have a root password for current machine, so you will have to create it again.
+
+virsh undefine UbuntuJammyHeadless
+sudo rm /var/lib/libvirt/images/ubuntu-22.04-minimal-cloudimg-amd64.img
+sudo cp ./ubuntu-22.04-minimal-cloudimg-amd64.img /var/lib/libvirt/imgaes/ubuntu-22.04-minimal-cloudimg-amd64.img
+
+Ubuntu cloud images contain a set of scripts that make deploying the image easier and more automated that's named
+Cloud-init. You can pass arguments to Cloud-init while creating your virtual machine. Cloud-init will generally only
+be available for images specifically prepared for the cloud.
+
+virt-install --osinfo ubuntujammy --name UbuntuJammyHeadless --memory-1024 --vcpus 1 --graphics none --import
+--disk /var/lib/libvirt/images/ubuntu-22.04-minimal-cloudimg-amd64.img --cloud-init root-password-generate=on
+
+Passing "root-password-generate=on" argument to cloud-init while importing the machine will make cloud-init
+generate a root password and show it on your terminal for 10 seconds before the first boot of the machine.
+Virt-install will automatically provide your virtual machine with internet connectivity.
+
 

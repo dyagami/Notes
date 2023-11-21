@@ -1,0 +1,10 @@
+To enable your storage device to use different filesystems, you have to partition it accordingly, ex.
+one NTFS partition for a Windows system and one ext4 partition for dual-booting it with a Linux system. 
+
+lsblk - list block devices
+
+Block devices are basically blocks of storage space that Linux can store in and retrieve data from.
+Only block devices of type "part" are logical partitions. In the output, the device sda is a virtual
+disk and sda1, sda2 and so on are partitions on that disk. The disk devices on virtual machines typically
+begin with letter "V". "S" stands for "serial" and means serial devices that may be connected to SATA or
+ATA port on the motherboard. If you use NVMe devices, they will be named as "nvme". 

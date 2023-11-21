@@ -12,11 +12,26 @@ sudo firewall-cmd --add-service=mysql --permanent
 
 You will need to configure MariaDB, since default configuration lets anynone on the system log in as superuser
 using "mysql -u root" command. You can do so very simply, by issuing "mysql_secure_installation" command. A wizard
-will walk you through the hardening process. MariaDB configuration file is located at /etc/my.cnf. This file is
+will walk you through the hardening process. 
+
+- To manually configure root password, first login to database server as root user 
+
+sudo mysql -u root
+
+- Update MariaDB password entry for user root using special "SET PASSWORD" functionality
+
+MariaDB [(none)]> SET PASSWORD = PASSWORD('$PASSWORD')
+
+
+MariaDB configuration file is located at /etc/my.cnf. This file is
 almost blank and points to /etc/my.cnf.d directory. There you will find mariadb-server.cnf file, which will 
 contain most of MariaDB's configuration. It can be treated as the main MariaDB configuration file. 
 
 "
+
+[server]
+port = $PORT 	# Add this line if you want to change the port mysqld listens on
+
 
 [mysqld]
 datadir=/var/lib/mysql 		# This variable sets directory of the databases
@@ -35,3 +50,4 @@ bind-address=0.0.0.0 	# This is the address that MariaDB listens on. By default,
 If you're ever forced to use legacy MySQL server, the main configuration file will be located in the same directory
 under "mysql-server.cnf" filename. 
 
+Under /etc/mysql/mariadb.conf.d/ directory you will find more configuration for your MariaDB Server. 
