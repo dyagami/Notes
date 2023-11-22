@@ -1,6 +1,6 @@
-Parameter is any entity that stores values. Shell parameters are used to store and reference
-useful data that you can use in your scripts. Shell parameters are categorized into Variables,
-Positional Parameters and Special Parameters. 
+Parameter is any entity that stores values. Parameters are categorized into Variables,
+Positional Parameters and Special Parameters. Shell variables are variables predefined and
+referenced by Bash that you can also modify and reference in your scripts. 
 
 User-defined Variables are declared as follows, using all lowercase:
 
@@ -17,7 +17,7 @@ You can also declare variables directly from the terminal window by using "name=
 sourcing a file with variables using "source $FILE". For the variables in source file to be able
 to be sourced, you first need to add "export $VARIABLE" command in such file. You can modify Shell
 Variables like that too, although they might revert after logout or restart, since some of them
-are defined in startup or logon scripts on your system. If you know of such file, you can source
+are defined in startup and logon scripts on your system. If you know of such file, you can source
 it to revert the manual change you did to the Shell Variable.
 
 "
@@ -126,4 +126,7 @@ Bash will interpret it as a whole parameter.
 String Lists can contain any set of individual characters or words - {a,19,z,barry,42}
 Range Lists let you rapidly expand to sequences of characters that follow a particular pattern, ex.
 numbers 1 to 100 or letters A to Z. - {1..100}. Range Lists also work in reverse and you can add a
-step to them - {10..1..2} 
+step to them - {10..1..2}, {1..9..3}
+Brace Expansion has a feature that lets you add leading zeroes to elements. To use it, just add
+zero in front of a number - {01..20}
+
