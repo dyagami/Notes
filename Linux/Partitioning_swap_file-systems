@@ -44,3 +44,4 @@ sudo chmod 600 swap
 sudo mkswap /swap
 sudo swapon --verbose /swap
 
+To make filesystem on a partition, you should use mkfs.$FILESYSTEM command

@@ -154,6 +154,7 @@ sudo nmcli connection modify $INTERFACE autoconnect yes - make connection run at
 sudo nmcli connection modify $INTERFACE +ipv4.routes "$IP/$SUBNET $IP" - add a route to the routing
 table. After adding the route you need to reapply settings. You can use "-" instead of "+" to delete
 the route.
+sudo nmcli connection modify $INTERFACE ipv4.gateway "$IP" - change default gateway of the interface
 
 /etc/sysconfig/network-scripts/ directory contains ifcfg config files for all current NetworkManager
 connections
