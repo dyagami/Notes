@@ -7,4 +7,40 @@ Block devices are basically blocks of storage space that Linux can store in and 
 Only block devices of type "part" are logical partitions. In the output, the device sda is a virtual
 disk and sda1, sda2 and so on are partitions on that disk. The disk devices on virtual machines typically
 begin with letter "V". "S" stands for "serial" and means serial devices that may be connected to SATA or
-ATA port on the motherboard. If you use NVMe devices, they will be named as "nvme". 
+ATA port on the motherboard. If you use NVMe devices, they will be named as "nvme".
+
+sudo fdisk --list $DEVICE - List partitions and see more info about disk sectors
+
+Disks are divided into sectors of a predefined size. Partitions have their start and end sectors. Usually first
+one megabyte worth of sectors on a disk is left unpartitioned in case a bootloader needs to be installed there.
+For the operating system to know where a partition begins and ends, the disk has to have a partition table.
+The legacy way of storing this information was MBR(Master Boot Record)-type partition table, which was stored
+at the beginning of the disk in a MAster Boot Record. Now most of the systems use GPT (GUID Partition Table),
+which enables more primary partitions, less corruption, much larger partition sizes and more. 
+
+sudo cfdisk $DEVICE - Create new partition table for a device
+
+In cfdisk utility "dos" is an equivalent of MBR
+
+Swap is an area where Linux can temporarily move some data from the computer's Random Access Memory. This is
+done in order to preserve RAM when it's needed by software that's more active at the moment. You can check if
+and where swap is located by issuing "swapon --show" command. To create swap space on your system, you should
+first create a partition with a swap partition type. Then issue "sudo mkswap $PARTITION" command to format this
+partition as a swap area and "sudo swapon --verbose $PARTITION" to set swap space on this partition.. To stop
+using the partition as a swap area, use "sudo swapoff $PARTITION" command. Instead of partitions, you can also
+use simple files as a swap space. To do so, you need to create a file with predefined size containing only 
+binary zeroes. To do so, use utility called "dd". Normally, dd is using to converting and copying a file. In
+your case, you'll use special device "/dev/zero", which generates infinite number of zeroes when an application 
+reads from it.
+
+sudo dd if=/dev/zero of=/swap bs=1M count=4096 status=progress
+
+This command means to take input of /dev/zero, output it to /swap file, make it have block size of 1 megabyte
+and multiply it by 4096, which will amount to a 4-gigabyte file of only zeroes. Regular users should not be
+able to read swap file, as it would potentially give them access to memory contents of programs that other
+users might be using, so you need to make sure that only root user can read and write to this file. 
+
+sudo chmod 600 swap
+sudo mkswap /swap
+sudo swapon --verbose /swap
+
