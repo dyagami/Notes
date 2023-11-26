@@ -1,0 +1,19 @@
+Quoting in Bash is about Removing Special Meanings from the characters so they are interpreted
+literally by the Shell. 
+
+Backslash (\) removes special meaning from next character. The literal backslash, if not escaped,
+is then removed in the Quote Removal step by Shell.
+
+Single Quotes ('') removes special meaning from all characters inside. Single quotes cannot contain
+another singel quotes, even if escaped by the backslash.
+
+Double Quotes ("") removes special meaning from all except dollar signs ($) and backticks (`).
+Everything put into backticks is evaluted in a new subshell, so you get the output when you
+reference the command that you put there. Double quotes, while allow you to use Command
+Substitution, also let you escape dollar sign and backtick characters using backslash.
+
+Ampersand (&) has a special meaning to the shell - it tells Bash to run the command in front
+of it in the background.
+
+Filepaths should be run either with double backslashes, so the each second backslash is escaped
+by the first one and so interpreted literally, or in single quotes.

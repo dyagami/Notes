@@ -15,4 +15,24 @@ metacharacters and operators always contain unquoted metacharacters.
 
 Step 2: Command Identification
 
-Based on where words and operators are, shell moves on to identyfing 
+Based on where words and operators are, shell moves on to Command Identifiation. The shell breaks
+the command line up into either simple or compound commands. Simple commands are just a bunch of
+individual words and each simple command is terminated by a control operator. Compound commands
+provide bash with its programming constructs, such as if statements, for loops, etc. 
+
+Step 3: Expansions
+
+Bash then moves on to step 3 of its process where it performs any required expansions. This
+includes all of the expansions in previous notes as well as some new types of expansions.
+
+Step 4: Quote Removal
+
+Bash removes supportive quotes, which were added to control how the command was interpreted.
+
+Step 5: Redirection
+
+In the fifth, final step, Bash performs any redirection.
+
+
+
+After completing these five steps, Bash will perform command that is left over.
