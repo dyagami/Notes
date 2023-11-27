@@ -1,0 +1,48 @@
+There are multiple protocols allowing access to remote filesystems. Protocol is, in a way, a language that client
+and server use to speak to each other. To share filesystems between two Linux systems, most often NFS is used. To
+use NFS Server, you should first install nfs-kernel server package (Ubuntu) or nfs-utils (CentOS). Then you should
+specify what directories you want to be shared on the network by editing /etc/exports file.
+
+sudo apt install -y nfs-kernel-server&& sudo systemctl enable --now nfs-kernel-server.service
+OR
+sudo dnf install -y nfs-utils && sudo systemctl enable --now nfs-server.service
+
+/etc/exports file contains list of directories that will be shared to the network.
+
+"
+
+/srv/homes	$HOSTNAME1(rw,sync,no_subtree_check) $IP1/$SUBNET(ro,sync) $IP2(all_squash,rw)
+/etc 127.0.01(ro) # This entry indicates that /etc folder is shared for localhost IP and is read-only. Such
+		  entries let you share directories TO specific IP addresses, ranges, or networks (in CIDR
+		  notation)
+/share *.example.com(ro,sync)
+
+"
+
+Export options that are specified in /etc/exports are:
+ro - Read Only
+rw - Read/Write
+sync - Synchronous writes - NFS ensures that data written by the client is successfully saved on the server berfore
+reporting operation success
+async - Asynchronous writes - Client can issue multiple write requests and NFS can report hat the writes are
+completed even before the're actually saved on the storage device
+no_subtree_check - disables subtree checking - Disables strict subdirectory checking, which can cause issues when
+files are renamed or moved, this is a default behavior
+no_root_squash - allows root user in NFS client to also have root priviliges on a remote NFS share
+root_squash - assigns every user who tries to log in to NFS Share as root to a regular user called Nobody
+all_squash - map all uids and gids to anonymous user. Useful for public FTP directories.
+
+To apply settings done in /etc/exports file, use "sudo exportfs -r" (re-export) command. This does a refresh based
+on the /etc/exports file. To see current exports with their options, use "sudo exportfs -v" command.
+
+NFS client is included in nfs-common package. To mount a remote NFS directory, use:
+
+sudo mount $IP/HOSTNAME:/$REMOTE_PATH /$LOCAL_PATH
+
+You can then add the nfs mountpoint to your /etc/fstab file.
+
+"
+
+127.0.0.1:/etc /mnt nfs defaults 0 0
+
+"

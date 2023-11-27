@@ -44,4 +44,86 @@ sudo chmod 600 swap
 sudo mkswap /swap
 sudo swapon --verbose /swap
 
-To make filesystem on a partition, you should use mkfs.$FILESYSTEM command
+To store data on a partition, you need to make a filesystem on it first. To make filesystem, use "sudo
+mkfs.$FILESYSTEM $DEVICEPATH command (-L $LABEL)", ex. "sudo mkfs.ext4 /dev/sdb1 "BackupVolume"". Use the
+command without arguments to see available options. Use "-i $SIZEINBYTES" argument to specify custom Inode size
+for the filesystem. Use bigger Inode size (such as 512 bytes) to store extended file attributes. XFS filesystem
+has a package called xfs_utilities, which includes xfs_admin that lets you change things on an already created
+filesystem. To manage filesystem attributes of ext-type filesystems, use "sudo tune2fs" command, ex.
+"sudo tune2fs -L "$LABEL" $DEVICEPATH". Use "sudo tune2fs -l" to list filesystem attributes.
+
+Inode (index node) is a data structure that describes filesystem object such as file or directory. Each node
+stores the attributes and disk block locations of the object's data. Filesystem object attributes may include
+metadata (times of last change, access, modification) as well as owner and permission data. 
+
+To mount a filesystem, which is basically plugging it to one of your directories, use "sudo mount $DEVICEPATH
+$MOUNTPOINT". Use "sudo umount $MOUNTPOINT". The /etc/fstab file contains configuration for what filesystems
+will be mounted on boot:
+$DEVICEPATH	$MOUNTPOINT		$FILESYSTEM	$MOUNTOPTIONS	$1/0			$0/1/2
+									^ This determines	^ 0 - no scanning
+									if utility called dump	1 - priority scanning
+									should back up this	for errors
+									filesystem (LEGACY)	2 - Scanning for
+												errors
+
+After editing /etc/fstab file, you should reload systemd by issuing "sudo systemctl daemon-reload" command. You
+can also use "UUID=$UUID" device path in the /etc/fstab file instead of block device file, as devices are named
+in the order they are connected to the motherboard and swapping ports they're connected to may change device
+naming and break things. To view block device UUID, use "sudo blkid $DEVICEPATH" command.
+
+On-demand mounting is when device is only mounted when the system tries to read or write to it and unmounts it
+after it's not needed. This is a good solution for remote filesystems, so the two servers don't need to keep
+the connection up and exchange data when it's not needed. It makes the exchange from centralized server scalable
+to many hosts, as the bandwith gets allocated to the hosts that actually need it. To make such functionality
+available, use autofs utility. 
+
+sudo $(apt/dnf) install -y autofs && sudo systemctl enable --now autofs.service
+
+To specify devices that should be auto-mounted by autofs, you should edit /etc/auto.master file:
+
+"
+
+/shares /etc/auto.shares --timeout=400   # This tells autofs to auto-mount /shares directory, which options will
+					 be present in /etc/auto.shares file. Timeout value specifies after what 
+					 time of inactivity the directory will be unmounted.
+# /- etc/auto.shares --timeout=400 	 # To automount directory without parent directory you should specify
+					 a line like this.
+
+"
+
+Then you should create the autofs configuration file that you specified in auto.master (which in this case is 
+/etc/auto.shares) and edit it:
+
+"
+
+mynetworkshare -fstype=auto 127.0.0.1:/etc	# "mynetworkshare" specifies that when this on-demand mount is
+						accessed, it should apply as /shares/mynetworkshare directory.
+						In "fstype" argument you can specify a filesystem or auto-detection
+						of filesystem or make it read-only. "127.0.0.1:/etc" part specifies
+						remote server's IP and directory you want to access.
+#mynetworkshare2 -fstype=ext4,ro 127.0.0.1:/
+myext4files -fstype=auto :/dev/sda4	# By omitting the IP address part, you can specify automount for a local
+					directory
+# /mynetworkshare -fstype=auto 127.0.0.1:/etc		# If you specified no parent directory in the auto.master
+# /localfiles/myext4files -fstype=auto :/dev/vdb2 	file, you should set these lines with absolute paths
+							instead of relative.
+"
+
+After changing /etc/exports file, you should reload NFS server daemon.
+
+To list current mountpoints, use "findmnt" command. This will show all mount points, including the virtual ones.
+/proc mount point is a virtual file system that exists only in RAM. "findmnt -t $FILESYSTEM" option lets you see
+only mount points of a particular filesystem. If you want to list more than one specific filesystem, you can
+add the other ones separated by a comma. Mount point list shows you mount options, which you can specify by adding
+"-O" argument to the "mount" command. To specify multiple options for mount command, separate them by comma without
+space. Add "remount" option to apply these options to an already mounted filesystem.  
+
+rw - Read/Write mount
+ro - Read-only mount
+noexec - Don't allow execution of programs from the mount point
+nosuid - Disables SUID permission that allows programs to run with root priviliges without needing the sudo command.
+This is particularly useful for security and widely used on, for example, Android phones, which have noexec and
+nosuid options on mountpoints with user data such as photos or videos.
+
+Options until now are filesystem-independent and can be found in "man mount" page. To see filesystem-specific options,
+consult the manual page of the filesystem, ex. "man xfs".
