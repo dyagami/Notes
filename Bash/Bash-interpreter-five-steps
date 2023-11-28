@@ -11,7 +11,23 @@ space, tab and newline. Shell uses these Metacharacters to break up the command 
 breaking up a command line into tokens, Bash classifies them into either words or operators.
 In Bash's context, a word is a token that does not contain an unquoted metacharacter. Operator
 is a token that contains at least one unquoted metacharacter. Words never contain unquoted
-metacharacters and operators always contain unquoted metacharacters. 
+metacharacters and operators always contain unquoted metacharacters. There are two types of
+Operators - Control Operators and Redirection Operators. Control Operators are used to control
+how a command line is processed. Full list of Control Operators is:
+- Newline	- ;;		- |
+- ||		- ;&		- ;;&
+- &		- |&		- &&
+- (		- )		- ;
+
+Redirection Operators tell Bash to do certain redirections of the data streams that are connected
+to a command. A full list of redirection operators is:
+- <		- >|		- >
+- <<-		- <<		- <>
+- >>		- >&		- <&
+
+All Control Operators and Redirection Operators are made up of Metacharacters and only matter if
+they're unquoted.
+
 
 Step 2: Command Identification
 

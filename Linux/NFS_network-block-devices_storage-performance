@@ -46,3 +46,37 @@ You can then add the nfs mountpoint to your /etc/fstab file.
 127.0.0.1:/etc /mnt nfs defaults 0 0
 
 "
+
+Network Block Devices (NBD) are block devices that look like local disks to the system, but actually point to a 
+remote location. Whenever something reads or writes to the Network Block Device, the actual request gets sent to 
+remote server. To set up NBD Server, install nbd-server package and edit /etc/nbd-server/config file.
+
+"
+
+
+	user = nbd	# By default, NBD is going to run under "nbd" user and group, but will not have priviliges
+	group = nbd	to read and write from block devices. Comment out those lines or change them to root to
+			fix this.
+	allowlist = true 	# This line allows NBD client to list what block devices the server can share
+
+	[partition1]	# This specifies an identifier for this particular export. Use any name you want.
+	 exportname = /dev/vda1		# This specifies particular block device you want to export
+
+
+"
+
+Then you have to restart NBD Daemon
+
+sudo systemctl restart nbd-server.service
+
+You can view more export options in page 5 of nbd-server manual (man 5 nbd-server).
+
+On the client side, you have to install nbd-client package. Next, you'll have to add a kernel module called nbd, so
+the kernel is able to handle network block devices. Do so by issuing "sudo modprobe nbd" command. This, however
+is not a persistent change. For the change to be persistent across boots, you should edit
+/etc/modules-load.d/modules.conf file and add a line "nbd" to it. To attach a Network Block Device, use "sudo
+nbd-client $IP -N $IDENTIFIER". It will then be visible as a block device /dev/nbd$NUMBER. To access the device,
+you should mount it using "sudo mount /dev/nbd$NUMBER $MOUNTPOINT". Do detach the Network Block Device, use "sudo
+nbd-client -d $BLOCKDEVICE" command.
+
+
