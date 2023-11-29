@@ -80,3 +80,14 @@ you should mount it using "sudo mount /dev/nbd$NUMBER $MOUNTPOINT". Do detach th
 nbd-client -d $BLOCKDEVICE" command.
 
 
+Every storage device has its own limitations in terms of how many read and write operations it can perform. Utilities
+that monitor storage come with Sysstat package. Iostat (Input/Output Statistics) is a utility that comes with Sysstat
+that lets you monitor data writing and reading of your devices. Pidstat (Process ID Statistics) is a utility that
+lists ID of every running process with statistics regarding it. All of the metrics given by iostat is historical data
+since bootup. The per second usage is actually average usage divided by total uptime, so it won't show you data about
+spikes or incidents that happen from time to time. Total values are the sum from bootup. TPS stands for (transfers
+per second) and it means how many times system told the device to read OR write data. You can use "iostat $SECONDS"
+to see statistics from the last $SECONDS in real time. "-d" argument tells iostat to omit CPU usage information and
+focus on disk. Pass "-h" argument to show stats in human-readable format. Iostat command shows you storage device,
+but not individual partitions. To view individual partitions, pass a "-p" argument.  To view CPU usage for each
+Process ID, use "pidstat". To see disk usage, pass "-d" argument to the command. 

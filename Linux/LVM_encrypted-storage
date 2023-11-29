@@ -1,0 +1,65 @@
+LVM (Logical Volume Manager) lets you use free space from different portions o a disk, or use multiple individual
+disks and combine them into what system sees as one regular continuous partition. It also allows flexibility with
+resizing. lvm2 package will let you manage LVM partitions. There are some abbreviations associated with LVMs. 
+Most of the LVM commands are going to start with these abbreviations, so its best to memorize them.
+
+PV - Physical Volume - Theses represent real storage devices that LVM will work with. PV will often consist of a
+whole disk or Solid State Drive. Sometimes a PV could also be a partition. To see what PVs there are on the system,
+use "sudo lvmdiskscan". To create a PV, use "sudo pvcreate $BLOCKDEVICE" command. To see what Physical Volumes are
+currently attached to LVM, use "sudo pvs" command. PSize shows total PV size and PFree shows how much of unpartitioned
+space there is on the PV. To tell LVM how to use certain PVs, you should attach them to a VG (Volume Group). 
+
+VG - Volume Group - You can think of a Volume Group like a Virtual Disk inside of LVM. Once you add PVs to a VG, they
+will be seen as one continuous volume. This is useful, because you can keep growing your VG indefinitely by adding
+more disks to the server and adding them to this volume group. By doing this, you can expand your server's storage
+without ever needing to power off the server. To create a VG, use "sudo vgcreate $VGNAME $PV1 $PV2(..)" command. To
+add new PV, to the Volume Group, first create PV from it by issuing "sudo pvcreate $BLOCKDEVICE" command and then
+using "sudo vgextend $VGNAME $PV1 $PV2(..)". To see your changes, view volume groups using "sudo vgs" command. To
+remove PV from VG, use "sudo vgreduce $VGNAME $PV". If you don't use PV anymore, you can remove it from LVM by using
+"sudo pvremove $PV" command. 
+
+LV - Logical Volume - VG you have is not partitioned yet. To change it, you need to add an LV. LV is similar to a
+partition, but for an LVM. To create a Logical Volume, you should use "sudo lvcreate --size $SIZE --name
+$PARTITIONNAME $VG" command. To list LVs, use "sudo lvs" command. To view LV's path, so you can reference it in
+commands or scripts, use "sudo lvdisplay" command. After creating an LV, you will have to create a filesystem on it
+using classic mkfs syntax. To resize an LV with filesystem already created on it, use "sudo lvresize --resizefs
+--size $SIZE $VG/$LV" command, because without using "--resizefs" argument, the LV will resize and the filesystem on
+it will still use the space it used before.
+
+PE - Physical Extent - Data in LVM is divided into multiple pieces called Physical Extents. Extents work like blocks
+in a traditional partitioned disk in a way, but they are of bigger sizes. To use all available PEs on VG for an LV,
+use "sudo lvresize --extents 100%VG $VG" command. To resize LV to a size you want, use "sudo lvresize --size $SIZE
+$VG/$LV" command. 
+
+
+To encrypt a storage in Linux, you can use utility called CryptSetup. It supports two modes of encryption - plain and
+LUKS. LUKS stands for Linux Unified Key Setup. Plain mode just takes all data and encrypts it with user's passphrase. 
+The simplest way to set up a disk to be encrypted in plain mode is "sudo cryptsetup --verify-passphrase open --type
+plain $DEVICE $NAME". As it's not neccessary to use "--verify-passphrase" argument, it's highly recommended to do
+so, as in plain mode, CryptSetup has no idea if you type in a wrong password, which can end up corrupting your device's
+data. "open" option tells CryptSetup to open the drive for reading and writing encrypted data. "--type plain" is an
+argument for "open" option and tells CryptSetup to use plain encryption scheme. With a name you choose, you'll find
+your device created at /dev/mapper/$NAME. To programs on Linux, /dev/mapper/$NAME looks just like any other block
+device. After setting up the encrypted partition, you can make a filesystem on it using "sudo mkfs.$FILESYSTEM
+/dev/mapper/$NAME" command and mount it using "sudo mount /dev/mapper/$NAME $MOUNTPOINT". Your encrypted disk at
+/dev/mapper/$NAME is seen by programs as normal disk. When a program needs to write to your disk, Linux takes the data
+pointed for /dev/mapper/$NAME disk, encrypts it and writes it to the original block device at /dev/$NAME. Exactly the
+same happens when an application reads from your encrypted disk. Linux takes the encrypted data from /dev/$NAME,
+decrypts it, and sends it to application on /dev/mapper/$NAME device. Data is still visible as is on /dev/mapper/$NAME,
+but all read and write operations happen with encryption and decryption on the fly. This, however, opens a security
+vulnerability. As the /dev/mapper/$NAME disk is open, encrypted data from /dev/$NAME is visible on /dev/mapper/$NAME.
+To close encrypted disk, first unmount it by using "sudo umount $MOUNTPOINT" command and then close it using "sudo
+cryptsetup close $NAME". If the mapping device is closed, the data is 100% encrypted and safe.
+
+To create LUKS-encrypted disk, first format it with "sudo cryptsetup luksFormat $BLOCKDEVICE". The device only has to
+be formatted for LUKS once. In LUKS, changing the passphrase is way easier than in plain scheme. In plain scheme, you 
+have to re-encrypt all the data on device, but in LUKS you can just use "sudo cryptsetup luksChangeKey $DEVICE". To 
+open your formated disk with LUKS, use "sudo cryptsetup open $DEVICE $NAME". LUKS knows when a wrong password is typed,
+so you don't need to type it twice. When opening a LUKS-formated device, you don't need to specify type, because when 
+formatting disk for LUKS, CryptSetup writes a small header block to the device, which contains information about it
+being a LUKS-formatted disk type. Then you can make a filesystem on your /dev/mapper/$NAME device by using "sudo
+mkfs.$FILESYSTEM /dev/mapper/$NAME" command. To close the mapping device, you can use the same "sudo cryptsetup close
+$NAME". 
+
+
+
