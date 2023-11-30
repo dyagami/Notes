@@ -62,4 +62,19 @@ mkfs.$FILESYSTEM /dev/mapper/$NAME" command. To close the mapping device, you ca
 $NAME". 
 
 
+With RAID, you can take multiple storage devices and combine them into single storage area. Combination of two or more
+disks in a RAID is called an array. 
+Level 0 RAID  (or striped array) - A bunch of disks are grouped in a Level 0 RAID and then Linux sees them as a single
+storage area. The total usable space is equal to sum of all devices. Level 0 RAID is not redundant, meaning If you 
+lose one disk, the data on the entire array is lost.
+Level 1 RAID (mirrored array) - When a file is written to this array, it's cloned to all disks in it. This ensures no
+data loss in case of some disks malfunctioning.
+Level 5 RAID (minimum 3 disks) - When you read a file from one disk and it malfunctions, the file will still be saved,
+because RAID 5 array will keep something called parity on each disk. Parity is like a small backup, which can help
+rebuild data loss. At level 5, there's a constant 1TB space of parity saved across another disks, so exactly one
+1-terabyte disk can be rebuilt if it's lost.
+Level 6 RAID (minimum 4 disks) - Same as level five, but two disks can be lost and rebuilt from parity
+Level 10 (1+0) RAID - Combination of Level 1 and Level 0.  There are two Level 1 mirrors combined to have exactly half
+usable space as the sum of all disks would have. Each two mirrored disks are combined with the other two mirrored disks.
+
 
