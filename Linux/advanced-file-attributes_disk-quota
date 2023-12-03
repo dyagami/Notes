@@ -1,0 +1,31 @@
+ACLs (Access Control Lists) enable you to expand on generic file permissions by allowing specific users access to specific
+files. To use ACL, issue set file acl command "sudo setfacl --modify user:$USER:rw $FILE". You can use "group" keyword
+instead of "user" to set ACL for specific group or use three dashes instead of permission letters to deny all permissions
+for a specific user or group. To remove ACL for specific user or group, use "sudo setfacl --remove 
+$(user/group):$USER/$GROUP $FILE". You can set ACL recursivly by adding "--recursive" argument to the command.
+Recursiveness can be also used when removing an ACL To differentiate between files and folders that do and do not 
+contain ACL, look for "+" and "-" signs in the output of "ls -l" command. To see information on file's ACL, use
+"getfacl $FILE" command. The mask of ACL is the maximum permissions set for the file that gets adjusted automatically 
+each time you change the ACL and add new users and permissions to it. To manually limit the mask for the ACL, use "sudo 
+setfacl --modify mask:$PERMISSIONS $FILE". This will add "#effective" fields to the "getfacl $FILE" output to indicate 
+what permissions are effective in practice. 
+
+Files can contain attributes that enable and disable special behaviors when accessing or editing them. To change file
+attributes, use "sudo chattr +$ATTRIBUTE" and "sudo chattr -$ATTRIBUTE" commands. Access chattr man page to view all
+attributes that you can set on files and folders. chattr supports setting attributes recursively using "-R" argument.
+Some file attributes override root capabilities. To check what attributes file has, use "lsattr $FILE" command. 
+
+quota utility is used to manage disk quota on your server. To add disk quotas to your mount, you should edit the
+/etc/fstab file and add "usrquota" and "grpquota" mount options. It would look like this:
+/dev/vdb1 /mybackups xfs defaults,usrquota,grpquota 0 2
+In case of XFS filesystem you can just save the file and reboot your systems and quotas will apply because XFS filesystem
+tracks quotas internally in the filesystem itself, but the other filesystems, such as EXT4, don't have such functionality.To set up quotas for other filesystems, use "sudo quotacheck --create-files --user --group $BLOCKDEVICE". This will
+create "aquota.group" and "aquota.user" files which will keep track of how much space each user and group is using. To
+turn on quota limits for the mount, use "sudo quotaon $MOUNTPOINT" command. For checking if quotas work, you can create
+a directory, change its owner to a certain user you want to test and create a blank file of specified size by using
+"fallocate --length $SIZE $PATH" command. To edit user quotas, use "sudo edquota --user $USER" command. A soft limit is
+a limit that, when exceeded, will trigger a grace period in which a user has a chance to delete some files to go below
+the limit and a hard limit is a brickwall for creating new files. These limits are expressed in blocks by To see quota 
+information with the grace period, use "sudo quota --user $USER" command. You can also set an Inode quota for a user to
+limit number of files and directories they can create. To edit grace period, use "sudo quota --edit-period" command. 
+

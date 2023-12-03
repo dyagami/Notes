@@ -77,4 +77,21 @@ Level 6 RAID (minimum 4 disks) - Same as level five, but two disks can be lost a
 Level 10 (1+0) RAID - Combination of Level 1 and Level 0.  There are two Level 1 mirrors combined to have exactly half
 usable space as the sum of all disks would have. Each two mirrored disks are combined with the other two mirrored disks.
 
+If you have any LVM volumes on your disk, you should remove them before proceeding with creating RAID on these devices.
+Firstly, remove Volume Group linked to these devices and then remove Physical Volumes.
+sudo vgremove --force $VG
+sudo pvremove $PV1 $PV2(..)
 
+"mdadm" utility is used to manage RAID devices.
+sudo mdadm --create $ARRAY_DEVICE --level=$LEVEL --raid-devices=$DISKSNUMBER $BLOCKDEVICE1 $BLOCKDEVICE2 (...), ex.
+sudo mdadm --create /dev/md0 --level=0 --raid-devices=3 /dev/vdc /dev/vdd /dev/vde
+
+Then you can make filesystem on your newly created created RAID device by using "sudo mkfs.$FILESYSTEM $RAIDDEVICE"
+command. To disable deactivate an array, use "sudo mdadm --stop $RAIDDEVICE" command. When Linux boots up, it scans
+superblock of all devices. By doing so, it checks if a device belongs to a RAID array. If so, it then reassembles the
+array and assigns it a device on /dev/md$1-7. To avoid such behavior, you can wipe the superblock of these devices by
+using "sudo mdadm --zero-superblock $BLOCKDEVICE1 $BLOCKDEVICE2(..)". You can add a spare device for an array, which will
+replace a disk in array if it breaks by  adding "--spare devices=$NUMBER $BLOCKDEVICE1 $BLOCKDEVICE2(..)" to your "mdadm
+create..." command. To add a disk to an existing array, use "sudo mdadm --manage $RAIDDEVICE --add $BLOCKDEVICE". To
+remove a device from the array, just replace "--add" with "--remove". File /proc/mdstat contains information on RAID
+arrays and devices they consist of that are currently on your system.
