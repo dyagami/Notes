@@ -25,6 +25,8 @@ to a command. A full list of redirection operators is:
 - <<-		- <<		- <>
 - >>		- >&		- <&
 
+
+
 All Control Operators and Redirection Operators are made up of Metacharacters and only matter if
 they're unquoted.
 
@@ -32,9 +34,27 @@ they're unquoted.
 Step 2: Command Identification
 
 Based on where words and operators are, shell moves on to Command Identifiation. The shell breaks
-the command line up into either simple or compound commands. Simple commands are just a bunch of
-individual words and each simple command is terminated by a control operator. Compound commands
+the command line up into either Simple or Compound commands. Simple Commands are just a bunch of
+individual words and each simple command is terminated by a control operator. Compound Commands
 provide bash with its programming constructs, such as if statements, for loops, etc. 
+
+In Simple Commands, the command name is followed by individual arguments. All simple commands are 
+terminated by a control operator, which, in most cases, will be an invisible newline character. If 
+there are redirection operators and no control operators in the command line, Bash will interpret
+the whole line as a single simple command.
+
+Compound Commands are essentially Bash's programming constructs. Compound Commands can be used to
+create logic statements and loops. Each Compound Command starts with a reserved word and is
+terminated by a corresponding reserved word. By recognizing these reserved words and their
+corresponding reserved words, Bash is able to determine where Compound Commands start and end.
+Compound Commands can be written over multiple lines. 
+
+example: if statement starts with word "if" and ends with word "fi":
+"
+if [[ 2 -gt 1 ]]; then
+	echo "hello world"
+fi
+"
 
 Step 3: Expansions
 
