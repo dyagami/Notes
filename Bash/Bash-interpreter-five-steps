@@ -60,15 +60,94 @@ Step 3: Expansions
 
 Bash then moves on to step 3 of its process where it performs any required expansions. This
 includes all of the expansions in previous notes as well as some new types of expansions.
+Expansion is divided into four consecutive stages:
+	Stage 1: Brace Expansion
+	Stage 2: Parameter Expansion
+		 Arithmetic Expansion
+	 	 Command Substitution
+	 	 Tilde Expansion
+	Stage 3: Word Splitting
+		 Word Splitting is a process that shell performs to split the rusult of some unquoted
+		 expansions into separate words. As some words can be interpreted by the shell as
+		 one simple command's parameters, word splitting can have some significant effects
+		 on command line interpretation. Word splitting is only performed on the results of
+		 unquoted Parameter Expansions, Command Substitutions and Arithmetic Expansions. 
+		 The characters used to split words are governed by the IFS (Internal Field Separator)
+		 variable. The IFS variable contains space, tab and newline by default. If you want
+		 to see default value of IFS variable, which is space, tab and newline, you have to
+		 make them visible by using the ${IFS@Q} expansion. If you declare a variable like
+		 numbers="1 2 3 4 5" and then use "touch $numbers" command, 5 files will be created,
+		 as shell took the default characters in IFS variable and split words with these
+		 characters in between. If you issue the same command with Parameter Expansion put
+		 into double quotes, the shell will create a single file called "1 2 3 4 5". You can
+	 	 change IFS variable into any character you like to make shell perform word splitting
+		 with this parameter as a delimiter. 
+	Stage 4: Filename Expansion aka. Globbing
+		 Globbing is only performed on words, not operators. It includes the words that appear
+		 from Word Splitting and the words that were there in the first place. Globbing
+		 Patterns are words that contain unquoted Special Pattern Characters: "*", "?". "[".
+		 Any word containing these special characters is known as a pattern. Bash will look
+		 at all the characters in the pattern to determine file names that match the pattern
+		 as a whole. It will then sort the matching filenames alphabetically and pass as
+		 individual words in a command line and also indvidual arguments for a preceding 
+		 command. 
+		 Asterisk as a Globbing Special Character matches anything. Can be used with ls like
+		 "ls *" to list all files, directories and their subdirectories. It can also be used
+		 to match all files with certain extension, ex. "*.txt" or you can use the asterisk
+		 inside of a pattern to match anything between characters to the left and right.
+		 Asterisk matches anything, meaning it also matches absence of characters in its
+		 place. 
+		 Question mark as a Globbing Special Character matches any ONE character. You can
+		 match a fixed number of any characters by using multiple question marks in your
+		 command line. Question mark, unlinke asterisk, does require a character to take its
+		 place, it can't by replaced by nothing. 
+		 Square brackets as Globbing Characters match any ONE appearance of one of the
+		 characters you put inside them. You can use ranges of characters in the square
+		 bracket Globbing, by separating two far sides of range with a dash, ex.
+		 "file[1-5].txt". 
+Expansions are done in stage order, meaning that latter expansions cannot be used in former ones,
+ex. because Parameter Expansion happens after Brace Expansion, Parameter Expansion cannot be used
+inside of Brace Expansion. Expansions that are in the same stage are all given the same priority,
+and are performed in the order they are found on the command line when it is read from left to 
+right. 
+
 
 Step 4: Quote Removal
 
-Bash removes supportive quotes, which were added to control how the command was interpreted.
+Bash removes supportive quotes, which were added to control how the command was interpreted. Once
+Bash has used the quotes to remove special meaning, there is no need for the quotes anymore. The
+shell removes all unquoted backslashes, single quote characters and double quote characters that
+did NOT result from a shell expansion. 
 
 Step 5: Redirection
 
-In the fifth, final step, Bash performs any redirection.
-
-
+In the fifth, final step, Bash performs any redirection. Linux commands can take advantage of 
+three data streams:
+	Stream 0 = Standard Input (stdin) 
+	Stream 1 = Standar Output (stdout)
+	Stream 2 = Standard Error (stderr)
+Generally these three data streams can be redirected to any command, but whether the command
+uses the data stream or not, is depenedent on how it's programmed. 
+If you want to pass multiple lines of input to a command, Standard Input provides this 
+functionality, aside from command line arguments where you have to escape the newline characters 
+when providing multiple lines of input.
+Standard Output contains the data that is produced after a successful command execution.
+Standard Error contains all error messages and status messages that a command produces, but aren't
+considered the main output of a command. 
+By default, stdin is connected to user's keyboard and stdout and stderr are connected to the
+terminal the command is performed on. 
+You can use less than (<) sign to connect text file to stdin, ex. "cat < hello.txt".
+The default redirection operator for redirecting stdout is greater than (>) sign. You can output
+stdout to a file like this. You can also output stderr to a file with greater than sign, but you
+need to add "2" before it. Stdout and stderr are different streams, meaning they can be separated
+by redirection to different files. If you redirected a data stream to a file, it won't show on
+terminal. To redirect both stdout and stderr together, you can use "&>" redirection. A good way
+to silence a command is to redirect both data streams to /dev/null device, ex. "ls &> /dev/null".
+If you use single arrow redirection, Bash will truncate the destination file before writing to it.
+You can use two greater than symbols to append data stream to a file. 
+Each redirection operator has only one operand. 
 
 After completing these five steps, Bash will perform command that is left over.
+Everything that is performed in a Sub Shell (which command substition actually does) takes the
+whole 5-step proccess again inside the Sub Shell.
+
