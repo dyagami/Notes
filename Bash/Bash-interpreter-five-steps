@@ -67,7 +67,7 @@ Expansion is divided into four consecutive stages:
 	 	 Command Substitution
 	 	 Tilde Expansion
 	Stage 3: Word Splitting
-		 Word Splitting is a process that shell performs to split the rusult of some unquoted
+		 Word Splitting is a process that shell performs to split the result of some unquoted
 		 expansions into separate words. As some words can be interpreted by the shell as
 		 one simple command's parameters, word splitting can have some significant effects
 		 on command line interpretation. Word splitting is only performed on the results of

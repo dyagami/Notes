@@ -90,7 +90,7 @@ If you want to manually change the order of operations, you have to put into par
 operation you want to be done first. 
 
 "**" performs exponentiation, which is raising one number to the power of other number.
-"%" is a modulo opertator, which gives a remainder of division.
+"%" is a modulo operator, which gives a remainder of division.
 bc (basic calculator) is a programming language in and of itself, which can work with with numbers
 to any number of decimal places. bc has an interactive interface which you can open by issuing
 "bc" command. In your scripts, instead of using bc interactively, you will pipe the echo with
