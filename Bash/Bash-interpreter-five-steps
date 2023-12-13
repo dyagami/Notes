@@ -104,7 +104,8 @@ Expansion is divided into four consecutive stages:
 		 Square brackets as Globbing Characters match any ONE appearance of one of the
 		 characters you put inside them. You can use ranges of characters in the square
 		 bracket Globbing, by separating two far sides of range with a dash, ex.
-		 "file[1-5].txt". 
+		 "file[1-5].txt". You can use [!$CHARS] to match all characters except the ones
+		 in square brackets.
 Expansions are done in stage order, meaning that latter expansions cannot be used in former ones,
 ex. because Parameter Expansion happens after Brace Expansion, Parameter Expansion cannot be used
 inside of Brace Expansion. Expansions that are in the same stage are all given the same priority,

@@ -1,0 +1,33 @@
+The Read command is a command that lets you ask user for specific input for the script. You can
+store this input in a variable or use in another way. When the read command is executed, script
+stops and waits for user input. The Read command serves the same purpose as Positional Parameters,
+but lets the user input information while specifically asked to do so by the script instead of
+inputting it on start. By default, user's input is stored in the REPLY variable. If you want to
+declare variables with user input, you can follow the read command with variable names and then
+Bash will ask for input, which you can provide for each of these variables separated by spaces.
+"read -p "$PROMPT" $VARNAME" command will ask for user input while displaying a prompt.
+"-t $SECONDS" argument adds timeout to user input prompt after which it continues with the rest
+of the script. 
+"-s" argument prevents user input from showing while the user is typing. "-N $CHARS" argument
+specifies exactly how many characters the input has to have for the command to return successfull
+value. 
+
+The Select command lets you create selection menu for the user input. Select command presents the
+user with a menu, from which he will makes a selection that gets saved in a variable. The first
+argument you pass to the Select command is a variable name. If none is given, the answer will be
+saved in $RESPONSE variable. If you don't specify an option or specify non-existent option, the
+variable will remain empty. After getting an answer, select command loops back to selection by
+default. To prevent this looping behavior, you should add "break" reserved word just after your
+desired code. To show custom text in front of selection prompt, you should modify $PS3 variable,
+which contains Select command's prompt string. 
+
+"
+
+select $VARIABLE in $SELECTION $SELECTION (..) ; do
+$CODE
+break
+done
+
+"
+
+

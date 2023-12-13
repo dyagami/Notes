@@ -80,6 +80,21 @@ values up to length value. If you leave out ":length" part, Bash will start at o
 take the rest of the value up to the end. Remember to leave out the colon, otherwise Bash will
 think that you put zero as the lenght. Put a negative offset value with space before it to count
 offset from the end of the parameter's value.
+${parameter:-DEFAULT} syntax lets you substitute expansion with a default value when parameter is null.
+${parameter:=DEFAULT} syntax lets you assign default value to parameter and then substitute it in
+expansion if the parameter is null.
+${parameter:?DEFAULT} syntax lets you write the expansion of DEFAULT value to stderr, or if DEFAULT
+is not present, write a message stating so to stderr and ten exit shell, if it's not interactive.
+In case the parameter is not null, it gets substituted by DEFAULT.
+${parameter:+DEFAULT} syntax lets you substitute parameter with DEFAULT only if not null.
+
+Command substitution is similar to similar to Shell Expansion, but instead of giving you
+manipulated output, it gives you output of a command. Syntax for Command Substitution is
+dollar sign with parentheses and a command inside of them - "$(command)". You can also
+store command's output in a user-defined variable.
+time=$(date +%H:%m:%S)
+You can also use Command Substitution to run command inside other command.
+tar -cvf ~/backups/backup_"$(date +%d-$m-%Y_%H-%M-%S)".tar ~/* 2>/dev/null
 
 Arithmetic Expansion is a Parameter Expansion type which lets you perform arithmetics in shell.
 Arithmetic Expansions works only on integer numbers, not decimal numbers. Syntax "$((parameter))" 
@@ -129,4 +144,29 @@ numbers 1 to 100 or letters A to Z. - {1..100}. Range Lists also work in reverse
 step to them - {10..1..2}, {1..9..3}
 Brace Expansion has a feature that lets you add leading zeroes to elements. To use it, just add
 zero in front of a number - {01..20}
+
+Positional Parameters are pieces of data that can be provided to your script on the command line.
+A command line argument is information that you give to the script when it is run. Command line
+arguments follow the command name and are separated by spaces.  To set a Positional Parameter,
+refer to numeric variables ($1, $2, (..)) in the script. Then you can pass values to these
+variables after the script path in the command line. The numeric variables are reserved, meaning we 
+can't assign them values manually. If you go into two-digit numbers with the Positional Parameters, 
+you will have to use the Parameter Expansion with curly braces (advanced parameter expansion syntax)
+for it to work.
+
+Special Parameters are parameters that bash gives special meaning and which cannot be changed by user.
+Value of a special parameter is calculated based on the current script. 
+
+$# Special Parameter expands to the number of positional parameters currently provided to the script.
+$0 Special Parameter has different meanings depending on the context in which it's used. When used in
+interactive shell, this Parameter expands to the current shell's name. If used in a script, this
+parameter expands to the name of the script.
+$@ Special Parameter expands to all Positional Parameters at once, separated by spaces. If you put
+$@ in double quotes, it expands to each Positional Parameter wrapped in double quotes individually.
+You should wrap $@ in double quotes if you don't want the positional parameters to be subject to Word
+Splitting.
+$*, when unquoted, gives exactly the same result as $@. However, quoted $* separates each Positional
+Parameter with first character in the IFS variable which is, by default, space. But since the IFS
+variable can be changed to whatever you want, quoted $* enables more flexibility with expanding to
+Positional Variables.
 
