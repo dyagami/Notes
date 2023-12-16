@@ -1,0 +1,80 @@
+A list of commands is created when you put one or more commands on a given line. List operators
+are types of Control Operators that enable us to create lists of commands that operate in
+different ways. List operators are: "&", ";", "&&", "||".
+"&" sends command that precedes it in a list to the background and allows the shell to continue
+processing other commands without waiting for it to finish.
+";" waits for the previous command to finish and only then proceeds with the next one. It's an
+operator used to put multiple commands in one line. It does exactly the same thing as splitting
+the commands into different lines, but saves space. ";" doesn't care if the previous command
+returned exit code 0, it terminates the next command even if the former didn't run successfully.
+"&&" is the AND operator. It only runs the second command if the first one was successfull.
+"||" is the OR operator. It runs the second command only if the first one failed.
+By chaining AND operator and OR operator in Bash, you can create Ternary Operator.
+commandA && commandB || commandC - This tells Bash to run commandA and if it terminates
+successfully, run commandB. But if it returns an error, run commandC.
+
+Test commands let you perform logical checks in your script. A test command is a command that
+can be used in Bash to compare different pieces of information. Test evaluates if the condition
+is true and then returns exit code 0. Otherwise, it will return exit status of 1. Test condition
+has to be put in square brackets with spaces between brackets and condition on both sides. With
+simple test condition syntax, the result will be saved in $? variable. These are Integer Test
+Operators and you cannot use them on decimal numbers.
+[ $NUM -eq $NUM ] tests if two numbers are equal. 
+[ $NUM -ne $NUM ] tests if two numbers are equal.
+[ $NUM1 -gt $NUM2 ] tests if $NUM1 is greater than $NUM2.
+[ $NUM1 -lt $NUM2 ] tests if $NUM1 is less than $NUM2.
+[ $NUM1 -geq $NUM2 ] tests if $NUM1 is greater than or equal to $NUM2.
+[ $NUM1 -leq $NUM2 ] tests if $NUM1 is less than or equal to $NUM2.
+
+String Operators work similarly to Integer Operators, but have different syntax.
+[[ $a = $b ]] tests if two strings are equal.
+[[ $a != $b ]] tests if two strings are not equal.
+[[ -z $c ]] tests if the string is empty.
+[[ -n $c ]] tests if the string is not empty.
+
+File Test Operators compare files.
+[[ -e $FILE ]] tests if a file exists.
+[[ -f $FILE ]] tests if a file is a regular file.
+[[ -d $PATH ]] tests if something exists and is a directory.
+[[ -x $FILE ]] tests if a file exists and has execution permission. It's useful to check for
+scripts.
+-r and -w test if a file is readable and writable. -nt tests if a file is newer than another file.
+
+If Statements let you run certain pieces of code based on conditions. If Statements are Compound
+Commands which start with a reserved word "if" and end with a reserved word "fi". If the first
+condition in if statement fails, you can add another one that will be tested after it with putting
+"elif" reserved word nested in if statement with its own code. If the first condition and each elif
+condition that come after fail, you can optionally use "else" reserved word to nest commands that
+will be run in every other condition. When a Condition in If Statement returns exit code 0, code
+will be run. It's highly likely that a test command will be provided as an if statement condition. 
+
+"
+
+if [ 2 -gt 1 ]; then
+	echo test passed
+elif [ 1 -eq  1 ]; then
+	echo second test passed
+else
+	echo tests not passed
+fi
+
+" 
+
+You can chain multiple test commands using List Operators to create advanced logic in your scripts.
+
+"
+
+#check if contents of all three files are the same
+
+a=$(cat file1.txt)
+b=$(cat file2.txt)
+c=$(cat file3.txt)
+if [ $a = $b ] && [ $a = $c ]; then 	# replace && with || if you want to check if file2 OR file3
+					is the same.
+	rm file2.txt file3.txt
+else
+	echo "Files don't match"
+fi
+
+"
+
