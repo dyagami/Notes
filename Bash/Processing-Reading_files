@@ -1,0 +1,56 @@
+While loops are a type of looping constructs that repeat certain actions continously
+while certain conditions are giving exit code zero. When the conditions give exit code
+different than zero, Bash moves on to process further command lines in the script. While
+loops start with a reserved word "while" and end with a reserved word "done". While loops
+basically work like repetitive if statements, but execute specified commands over and
+over again while the test returns zero exit code.
+
+"
+
+read -p "Enter your number" num
+
+while [ $num -gt 10 ]; do
+	echo $num
+	num=$(( $num - 1 ))
+done
+
+"
+
+Getopts command lets you accept command line options and change script's behavior based
+on what is provided to it. You should pass options to the Getopts command in double quotes
+and put a colon after each option that should accept arguments. Then you should put a
+variable that the option should be stored in. Each time getopts command is run, it just
+gets the next option. To get every option using Getopts command, you should put it as
+a condition of a simple while loop. If no valid option is provided to the script, Getopts
+command will put a question mark inside a variable you specify. You can use this to catch
+incorrect options in further logic. Remember to use backslash with question mark so it
+gets interpreted literally. Option argument value is stored in $OPTARG variable, which you
+can refer to in your logic or futher in your script.
+
+"
+
+while getopts "f:c:" opt; do	# f and c options are used here to define whether the 
+				script should convert from Celsius to Fahrenheit or the 
+				other way around.
+	case "$opt" in
+		c) result=$(echo "scale=2; ($OPTARG * (9/5)) +32" | bc);;
+		f) 
+		\?)
+
+"
+
+Read-while loops are a combination of while loop with read command as its test condition
+that lets you iterate through file contents line by line. When the while loops receives
+input from read command, it will be given exit code 0 and execute. If the file is empty,
+the while loop will receive exit code 1 and won't run. To provide while loop with a file,
+you shoud use stdin redirection from file to the reserved word "done". 
+
+"
+
+while read line; do
+	echo "$line"
+done < "$1" 	# setting redirection from Positional Parameter here lets you specify the
+		filepath when executing the script for more flexibility.
+#done < <(ls $HOME)	# here shows how you can use Process Substitution in Linux to
+			imitate command output as file contents to pass it as stdin.
+"

@@ -1,0 +1,71 @@
+Regular variables can oly be used to sotre one piece of data at a time. Indexed Arrays,
+however, are a type of variable that lets you store multiple data values at the same time.
+Array is declared using parentheses and each value in this Array has to be separated by space.
+Arrays can contain both text and number data and the mixture of both. Each value in the Array
+has its index. Indexes start from 0 and go up. In Bash, if you do a simple parameter expansion
+of an Array, the result will be the zeroeth element of the Array. To access nth index in Array,
+you should use Parameter Expansion with curly braces and index stored inside of square brackets.
+To access all parameters at once, you should put @ symbol in the square brackets, just like
+with accessing all Positional Parameters. Just like with regular Parameter Expansions, you can
+use slicing with Parameter Expansion on an Array.
+
+
+"
+
+numbers=(1 2 3 4)
+echo $numbers		# 1
+echo ${numbers[2]} 	# 3
+echo ${numbers[@]}	# 1 2 3 4
+echo ${numbers[@]:1}	# 2 3 4
+echo ${numbers[@]:1:2}  # 2 3
+
+"
+
+If you want to add an element to the Array, you need to use Array name with += and another
+Array with elements to add them to the existing Array.
+
+"
+
+numbers=(1 2 3 4)
+echo ${numbers[@]}	# 1 2 3 4
+numbers+=(5)
+echo ${numbers[@]}	# 1 2 3 4 5
+
+"
+
+To delete an element from the Array, you should use "unset" command along with Array name and
+the element you want to delete in square brackets. Unsetting an element in the Array, however,
+messes with the indexes. You can see Array indexes by putting exclamation mark in front of the
+Array name in Parameter Expansion.
+
+"
+
+echo ${numbers[@]}	# 1 2 3 4 5
+unset numbers[2]
+echo ${numbers[@]}	# 1 3 4 5
+echo ${!numbers[@]}	# 0 1 3 4
+
+
+"
+
+To change an element in the Array, just type the Array name along with index of the element you
+want to change and declare a new value for it.
+
+"
+
+numbers[0]=a
+echo ${numbers[@]}	# a 3 4 5
+
+"
+
+Readarray command lets you generate arrays from files and outputs of commands. Readarray creates
+arrays from stdin. Readarray command is followed by the name of the array that will be created
+and stdin redirection. Readarray command creates a new Array element for each line that is provided
+to it via stdin. 
+
+"
+
+readarray days < days.txt
+
+
+"

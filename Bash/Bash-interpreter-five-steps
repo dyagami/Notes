@@ -125,7 +125,7 @@ Step 5: Redirection
 In the fifth, final step, Bash performs any redirection. Linux commands can take advantage of 
 three data streams:
 	Stream 0 = Standard Input (stdin) 
-	Stream 1 = Standar Output (stdout)
+	Stream 1 = Standard Output (stdout)
 	Stream 2 = Standard Error (stderr)
 Generally these three data streams can be redirected to any command, but whether the command
 uses the data stream or not, is depenedent on how it's programmed. 

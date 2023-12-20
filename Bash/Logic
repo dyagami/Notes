@@ -20,7 +20,7 @@ has to be put in square brackets with spaces between brackets and condition on b
 simple test condition syntax, the result will be saved in $? variable. These are Integer Test
 Operators and you cannot use them on decimal numbers.
 [ $NUM -eq $NUM ] tests if two numbers are equal. 
-[ $NUM -ne $NUM ] tests if two numbers are equal.
+[ $NUM -ne $NUM ] tests if two numbers are not equal.
 [ $NUM1 -gt $NUM2 ] tests if $NUM1 is greater than $NUM2.
 [ $NUM1 -lt $NUM2 ] tests if $NUM1 is less than $NUM2.
 [ $NUM1 -geq $NUM2 ] tests if $NUM1 is greater than or equal to $NUM2.
@@ -34,8 +34,8 @@ String Operators work similarly to Integer Operators, but have different syntax.
 
 File Test Operators compare files.
 [[ -e $FILE ]] tests if an entry on the filesystem exists, no matter if it's a file or a directory.
-[[ -f $FILE ]] tests if a file is a regular file.
-[[ -d $PATH ]] tests if something exists and is a directory.
+[[ -f $FILE ]] tests if an entry exists and is a regular file.
+[[ -d $PATH ]] tests if an entry exists and is a directory.
 [[ -x $FILE ]] tests if a file exists and has execution permission. It's useful to check for
 scripts.
 -r and -w test if a file is readable and writable. -nt tests if a file is newer than another file.
@@ -78,16 +78,16 @@ fi
 
 "
 
-Case statements are another type of compound command that let you alternatively create branching logic.
-Case statements start with reserved word "case" and end with reserved word "esac". They are generally
+Case statements are another type of Compound Command that let you alternatively create branching logic.
+Case statements start with reserved word "case" and end with a reserved word "esac". They are generally
 easier to write than multiple elif statements when you want to create sophisticated branching logic. 
-When creating case statment, you have to put a variable with a dollar symbol next to the "case" word,
+When creating case statement, you have to put a variable with a dollar symbol next to the "case" word,
 because the statement is going to check value of the variable against multiple cases. You also have
 to put the variable in double quotes, since you don't want it subject to Word Splitting. in case
 statement, Bash  will check the value of the variable and see what case it falls into. Then it will
 execute the code associated with the case. Bash can only match one case. If it matches more than
 one, it will run the first matching case in code. After you specify a case, you should close it
-with closing parentheses. Each case is called clause. Each close has to be ended with a double semicolon.
+with closing parentheses. Each case is called clause. Each clause has to be ended with a double semicolon.
 To specify commands that should be executed if no case is matched, you should put a default case
 using "*)". This utilises Globbing to match everything. The default case should be always put at as
 the last case.
