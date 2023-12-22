@@ -77,4 +77,22 @@ readarray -t files < <(ls $HOME)
 "
 
 For loops allow you to iterate through arrays, which enables batch processing a lot of different
-elements with commands. 
+elements with commands. A for loops iterates over a list of words or elements and performs a set of
+command for each element. 
+
+"
+
+readarray -t files < files.txt
+
+for i in "${files[@]}"; do
+	if [ -f "$i"; then
+		echo "$i already exists"
+	else
+		touch "$i"
+		"$i file was created"
+	fi
+done
+
+"
+
+
