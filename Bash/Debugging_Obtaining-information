@@ -1,0 +1,31 @@
+Shellcheck tool can check your script for any syntax errors, since the script won't
+work if any of these are present. Shellcheck also makes recommendations on your scripts.
+Shellcheck has a web GUI for you to paste your script's contents on www.shellcheck.net.
+Shellcheck is also available for most Debian and RHEL-based Linux distributions as a
+software package. To use shellcheck locally, just type "shellcheck $SCRIPT_PATH" and you
+will get output with suggestions. While shellcheck can be a great tool, it can only check
+for syntax errors, not the environment the script will be ran in. Some common errors that
+shellcheck won't be able to detect are:
+
+No such file or directory - This error can be a result of Word Splitting messing with your
+filepaths.
+
+File exists - This error can be simply avoided with running a test that checks if a file or 
+folder exists: "[ -d directory ] || mkdir directory".
+
+Permission denied - This error can be solved by running the script with root privileges.
+
+Internal commands are commands that are built into the Bash shell. External commands are
+commands that have are stored on the filesystem and have been added to PATH. To check which 
+type the command is, use "type -a" command followed by a name of the command you want to 
+check. To get information about an internal command, you should use "help $COMMAND". Use it 
+with "-d" argument to just see command's description and with "-s" argument to just see 
+command's usage information. To see a list of all available Internal Commands, use "help"
+command without arguments. To get usage information about an external command, you should 
+either use "man" or "info" commands. You can search man pages for a keyword using
+"man -k $KEYWORD" command to look up commands associated with the keyword. To look through
+man pages associated with a keyword interactively, you can use man command with "-K" argument.
+Info command has more detail compared to man command and also contains interactive hyperlinks.
+If you run info command without arguments, you will be presented with a menu with hyperlinks
+for different command categories. "Coreutils" selection is a huge knowledge base on Linux
+commands.
