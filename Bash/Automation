@@ -11,5 +11,19 @@ and to edit crontab for another user (ex. root user), you should use "crontab -e
 System-wide crontab lets you specify user as which cron will run the job. After editing
 system-wide crontab, you have to restart cron service for your entries to take effect.
 To get tips on cron usage and crontab syntax, you should visit crontab.guru website. 
-
+If you don't care about specific time at which you want your script to run and want it
+to run regularly, you can put it (without .sh ending) in one of predefined cron folders in
+/etc. These predefined times use run-parts command to execute scripts in a folder. If you
+want to setup your custom folder for scripts to run regularly with cron, you can put
+run-parts command in a crontab entry pointing to your folder. Run-parts is a regular
+command that takes directory as an argument and runs all executable scripts in it. Use
+"--report" option with run-parts command to log each script execution it triggers. You
+can also use anacron, to ensure jobs that have been missed during the time the system was
+off, get rerun at next boot. The most frequent period of time to run jobs with anacron, is
+daily. Time in days is the first column in anacron tab in /etc/anacrontab. The second column
+is delay in minutes at the job will be run after the anacron schedule starts. The third
+column is the job identfifier, which will be logged. The last column is the command that
+should be run. Anacron logs are located in /var/spool/anacron folder. You can change PATH
+variable for anacron in your anacrontab so you don't have to use absolute paths to your
+scripts in anacrontab.
 

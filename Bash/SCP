@@ -1,0 +1,4 @@
+SCP (Secure Copy) command lets you upload and download files to and from a remote 
+server. SCP uses SSH protocol to copy files. Use "scp $SOURCE:/PATH $SSH_TARGET:/PATH".
+You can use relative paths in SCP command, since you specify a user for SSH connection
+that is utilised in this command.
