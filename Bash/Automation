@@ -1,0 +1,15 @@
+At command is used to shedule tasks. You can use it to schedule execution of your scripts.
+For at command to work, At Daemon (atd) must be running on the system. You can use at
+interactively by issuing the "at $TIME" command.. Then you can write any commands and press 
+CTRL-D to finish. To list scheduled jobs use "atq". To remove a job, use "atrm $JOB". "at 
+$TIME -f $FILE" lets you specify a script file that should be run at scheduled time. You
+can also pipe specific command to at to schedule it. At doesn't allow recurring jobs.
+To schedule recurring jobs, you should use cron. Cron, like at, works by running a daemon
+service (cron) in the background. You can schedule cron jobs using crontab. System-wide
+crontab is located at /etc/crontab. To edit crontab for current user, use "crontab -e" command
+and to edit crontab for another user (ex. root user), you should use "crontab -e $USER".
+System-wide crontab lets you specify user as which cron will run the job. After editing
+system-wide crontab, you have to restart cron service for your entries to take effect.
+To get tips on cron usage and crontab syntax, you should visit crontab.guru website. 
+
+
